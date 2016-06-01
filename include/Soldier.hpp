@@ -1,7 +1,7 @@
-#ifndef SOLDIER_H
-#define SOLDIER_H
+#ifndef SOLDIER_HPP
+#define SOLDIER_HPP
 
-#include "World.h"
+#include "World.hpp"
 
 namespace Navigation
 {
@@ -9,12 +9,13 @@ namespace Navigation
 	{
 		public:
 		    // Constant expressions:
-		    static constexpr float MovementSpeed = 2.0f;
+		    static constexpr float MovementSpeed = 80.0f;
 		    static constexpr float RotationSpeed = 0.1f;
 		    // Constructor:
 		    Soldier(float x, float y);
 		    // Methods:
-		    void SetPath(std::vector<Vector> path);
+		    void SetPath(std::vector<Vector> &path);
+		    void Move(double time);
 			// Position:
 			Vector position;
 			// Rotation:
@@ -25,4 +26,4 @@ namespace Navigation
 	};
 };
 
-#endif // SOLDIER_H
+#endif // SOLDIER_HPP

@@ -3,6 +3,7 @@
 #endif
 
 #include <iostream>
+#include <cmath>
 
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
@@ -10,6 +11,7 @@
 
 #include "TileMap.hpp"
 #include "World.hpp"
+#include "Soldier.hpp"
 
 #define PROJECT_NAME "Pathfinding Demo"
 #define SCREEN_W 600
@@ -52,18 +54,34 @@ const char TILEMAP_DATA[30 * 30] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
+std::vector<Navigation::Vector> path;
+
 // Structure which represents navigable environment.
 Navigation::World world(30, 30, TILEMAP_DATA);
 
 // Start and finish points of our desired path.
 Navigation::Vector start(0.0f, 0.0f), finish(0.0f, 0.0f);
 
+// Soldier to travel along set path.
+Navigation::Soldier soldier(90.0f, 90.0f);
+
 bool smooth_path = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-        smooth_path = !smooth_path;
+    if(action == GLFW_PRESS)
+    {
+        switch(key)
+        {
+            case GLFW_KEY_SPACE:
+                smooth_path = !smooth_path;
+                break;
+            case GLFW_KEY_S:
+                soldier.position = start;
+                soldier.SetPath(path);
+                break;
+        }
+    }
 }
 
 
@@ -175,17 +193,19 @@ int main(int argc, char *argv[])
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
 
+
+            double frame_start = glfwGetTime();
             // Start main loop:
             while(glfwWindowShouldClose(window) != GL_TRUE)
             {
-                glfwWaitEvents();
+                glfwPollEvents();
 
 				glClear(GL_COLOR_BUFFER_BIT);
 
                 glPushMatrix();
                     glScalef(
-                        Navigation::World::TILE_W,
-                        Navigation::World::TILE_H, 1.0f
+                        Navigation::World::TileW,
+                        Navigation::World::TileH, 1.0f
                     );
                     for(int x = 0; x < world.width; x++)
                     {
@@ -217,7 +237,7 @@ int main(int argc, char *argv[])
                     }
                 glPopMatrix();
 
-                std::vector<Navigation::Vector> path;
+                path.clear();
                 // Calculate a path between the
                 // start and finish vectors if
                 // possible:
@@ -249,7 +269,7 @@ int main(int argc, char *argv[])
                     }
 
                     glColor3f(1.0f, 0.0f, 0.0f);
-                    // Draw the path:
+                    // Draw the path (line):
                     glBegin(GL_LINE_STRIP);
                     for(Navigation::Vector &i : path)
                     {
@@ -258,7 +278,7 @@ int main(int argc, char *argv[])
                     glEnd();
 
                     glColor3f(0.0f, 0.0f, 1.0f);
-                    // Draw the path:
+                    // Draw the path (vertices):
                     glBegin(GL_POINTS);
                     for(Navigation::Vector &i : path)
                     {
@@ -266,7 +286,7 @@ int main(int argc, char *argv[])
                     }
                     glEnd();
                 }
-
+                // Draw the start and finish positions of the path.
                 glColor3f(0.0f, 1.0f, 0.0f);
                 glBegin(GL_POINTS);
                     if(start.x || start.y)
@@ -274,8 +294,38 @@ int main(int argc, char *argv[])
                     if(finish.x || finish.y)
                         glVertex2f(finish.x, finish.y);
                 glEnd();
-
+                glPushMatrix();
+                    glTranslatef(
+                        soldier.position.x,
+                        soldier.position.y, 0.0f);
+                    glScalef(
+                        9.0f, 9.0f, 1.0f);
+                    // Draw the soldier (fill).
+                    glColor3f(0.0f, 1.0f, 1.0f);
+                    glBegin(GL_TRIANGLE_FAN);
+                        for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
+                        {
+                            glVertex2f( sinf(i), cosf(i) );
+                        }
+                    glEnd();
+                    // Draw the soldier (outline).
+                    glColor3f(0.0f, 0.0f, 0.0f);
+                    glBegin(GL_LINE_LOOP);
+                        for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
+                        {
+                            glVertex2f( sinf(i), cosf(i) );
+                        }
+                    glEnd();
+                    // Draw the soldier (direction).
+                    glBegin(GL_LINES);
+                        glVertex2f(0.0f, 0.0f);
+                        glVertex2f(0.0f, 1.0f);
+                    glEnd();
+                glPopMatrix();
                 glfwSwapBuffers(window);
+                double frame_end = glfwGetTime();
+                soldier.Move(frame_end - frame_start);
+                frame_start = frame_end;
             }
         }
         else

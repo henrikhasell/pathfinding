@@ -16,8 +16,8 @@ World::World(int width, int height, const char data[]) : TileMap(width, height, 
 Tile *World::GetTile(Vector &position)
 {
     return TileMap::GetTile(
-        (int)(position.x / TILE_W),
-        (int)(position.y / TILE_H)
+        (int)(position.x / TileW),
+        (int)(position.y / TileH)
     );
 }
 
@@ -62,9 +62,9 @@ bool World::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &pa
     {
         for(Tile *tile = GetTile(finish); tile; tile = tile->GetParent())
         {
-            path.emplace(path.end(),
-                (TILE_W * tile->GetX()) + (TILE_W / 2),
-                (TILE_H * tile->GetY()) + (TILE_H / 2)
+            path.emplace(path.begin(),
+                (TileW * tile->GetX()) + (TileW / 2),
+                (TileH * tile->GetY()) + (TileH / 2)
             );
         }
 
@@ -76,33 +76,23 @@ bool World::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &pa
 
 bool World::Visible(Vector &start, Vector &finish)
 {
-    Vector ray_direction = {
-        finish.x - start.x,
-        finish.y - start.y
-    };
-
-    float ray_magnitude = sqrtf(
-        ray_direction.x * ray_direction.x +
-        ray_direction.y * ray_direction.y
-    );
-
-    ray_direction.x /= ray_magnitude;
-    ray_direction.y /= ray_magnitude;
+    Vector ray_direction = finish - start;
+    ray_direction.Normalise();
 
     int stepX = ray_direction.x >= 0 ? 1 : -1;
     int stepY = ray_direction.y >= 0 ? 1 : -1;
 
     float distanceFromEdgeX = stepX < 0
-        ? -fmod(start.x, TILE_W) : TILE_W - fmod(start.x, TILE_W);
+        ? -fmod(start.x, TileW) : TileW - fmod(start.x, TileW);
 
     float distanceFromEdgeY = stepY < 0
-        ? -fmod(start.y, TILE_H) : TILE_H - fmod(start.y, TILE_H);
+        ? -fmod(start.y, TileH) : TileH - fmod(start.y, TileH);
 
     float magnitudeToEdgeX = distanceFromEdgeX / ray_direction.x;
     float magnitudeToEdgeY = distanceFromEdgeY / ray_direction.y;
 
-    float magnitudeForOneUnitX = TILE_W / fabs(ray_direction.x);
-    float magnitudeForOneUnitY = TILE_H / fabs(ray_direction.y);
+    float magnitudeForOneUnitX = TileW / fabs(ray_direction.x);
+    float magnitudeForOneUnitY = TileH / fabs(ray_direction.y);
 
     Tile *current_tile = GetTile(start);
     Tile *target_tile = GetTile(finish);
