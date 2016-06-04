@@ -64,14 +64,14 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
             GetTile(x + 0, y + 1),
             GetTile(x + 0, y - 1)
         };
-/*
+
         Tile *diagonal[4] = {
             GetTile(x + 1, y + 1),
             GetTile(x - 1, y - 1),
             GetTile(x + 1, y - 1),
             GetTile(x - 1, y + 1)
         };
-*/
+
         for(Tile *selected : adjacent)
         {
             if(selected && selected->SetParent(head, 1.0f) == true)
@@ -86,7 +86,7 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
             }
         }
-/*
+
         for(Tile *selected : diagonal)
         {
             if(selected && selected->SetParent(head, 1.4f) == true)
@@ -101,7 +101,7 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
             }
         }
-*/
+
         open_set.pop();
     }
 

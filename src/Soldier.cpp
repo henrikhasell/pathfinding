@@ -7,6 +7,11 @@ Soldier::Soldier(float x, float y) : position(x, y), rotation(0.0f)
 
 }
 
+Soldier::Soldier(float x, float y, std::vector<Vector> &path) : Soldier(x, y)
+{
+    SetPath(path);
+}
+
 void Soldier::SetPath(std::vector<Vector> &path)
 {
     this->path = path;

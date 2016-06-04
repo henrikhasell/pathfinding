@@ -3,6 +3,8 @@
 #endif
 
 #include <iostream>
+#include <iterator>
+#include <vector>
 #include <cmath>
 
 #include <GLFW/glfw3.h>
@@ -56,14 +58,13 @@ const char TILEMAP_DATA[30 * 30] = {
 
 std::vector<Navigation::Vector> path;
 
+std::vector<Navigation::Soldier> army;
+
 // Structure which represents navigable environment.
 Navigation::World world(30, 30, TILEMAP_DATA);
 
 // Start and finish points of our desired path.
 Navigation::Vector start(0.0f, 0.0f), finish(0.0f, 0.0f);
-
-// Soldier to travel along set path.
-Navigation::Soldier soldier(90.0f, 90.0f);
 
 bool smooth_path = false;
 
@@ -77,8 +78,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
                 smooth_path = !smooth_path;
                 break;
             case GLFW_KEY_S:
-                soldier.position = start;
-                soldier.SetPath(path);
+                army.emplace_back(start.x, start.y, path);
                 break;
         }
     }
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
 
                         Navigation::Vector previousViewpoint = path[0], currentViewpoint = path[0];
 
-                        minimal_path.push_back(finish);
+                        minimal_path.push_back(start);
 
                         for(Navigation::Vector selectedNode : path)
                         {
@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
                             previousViewpoint = selectedNode;
                         }
 
-                        minimal_path.push_back(start);
+                        minimal_path.push_back(finish);
 
                         path = minimal_path;
                     }
@@ -294,39 +294,64 @@ int main(int argc, char *argv[])
                     if(finish.x || finish.y)
                         glVertex2f(finish.x, finish.y);
                 glEnd();
-                glPushMatrix();
-                    glTranslatef(
-                        soldier.position.x,
-                        soldier.position.y, 0.0f);
-                    glScalef(
-                        9.0f, 9.0f, 1.0f);
-                    glRotatef(soldier.rotation * 57.2958f,
-                        0.0f, 0.0f, 1.0f);
-                    // Draw the soldier (fill).
-                    glColor3f(0.0f, 1.0f, 1.0f);
-                    glBegin(GL_TRIANGLE_FAN);
-                        for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-                        {
-                            glVertex2f( sinf(i), cosf(i) );
-                        }
-                    glEnd();
-                    // Draw the soldier (outline).
-                    glColor3f(0.0f, 0.0f, 0.0f);
-                    glBegin(GL_LINE_LOOP);
-                        for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-                        {
-                            glVertex2f( sinf(i), cosf(i) );
-                        }
-                    glEnd();
-                    // Draw the soldier (direction).
-                    glBegin(GL_LINES);
-                        glVertex2f(0.0f, 0.0f);
-                        glVertex2f(0.0f, 1.0f);
-                    glEnd();
-                glPopMatrix();
+
+                for(Navigation::Soldier &soldier : army)
+                {
+                    glPushMatrix();
+                        glTranslatef(
+                            soldier.position.x,
+                            soldier.position.y, 0.0f);
+                        glScalef(
+                            9.0f, 9.0f, 1.0f);
+                        glRotatef(soldier.rotation * 57.2958f,
+                            0.0f, 0.0f, 1.0f);
+                        // Draw the soldier (fill).
+                        glColor3f(0.0f, 1.0f, 1.0f);
+                        glBegin(GL_TRIANGLE_FAN);
+                            for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
+                            {
+                                glVertex2f( sinf(i), cosf(i) );
+                            }
+                        glEnd();
+                        // Draw the soldier (outline).
+                        glColor3f(0.0f, 0.0f, 0.0f);
+                        glBegin(GL_LINE_LOOP);
+                            for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
+                            {
+                                glVertex2f( sinf(i), cosf(i) );
+                            }
+                        glEnd();
+                        // Draw the soldier (direction).
+                        glBegin(GL_LINES);
+                            glVertex2f(0.0f, 0.0f);
+                            glVertex2f(0.0f, 1.0f);
+                        glEnd();
+                    glPopMatrix();
+                }
                 glfwSwapBuffers(window);
                 double frame_end = glfwGetTime();
-                soldier.Move(frame_end - frame_start);
+
+                for(Navigation::Soldier &soldier : army)
+                {
+                    soldier.Move(frame_end - frame_start);
+                }
+
+                std::vector<Navigation::Soldier>::iterator i = army.begin();
+                // Iterate over the army array
+                // and remove any soldiers who
+                // have nowhere to walk.
+                while(army.end() != i)
+                {
+                    if(i->path.empty() == true)
+                    {
+                        i = army.erase(i);
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+
                 frame_start = frame_end;
             }
         }

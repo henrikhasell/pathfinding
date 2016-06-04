@@ -13,6 +13,7 @@ namespace Navigation
 		    static constexpr float RotationSpeed = 0.1f;
 		    // Constructor:
 		    Soldier(float x, float y);
+		    Soldier(float x, float y, std::vector<Vector> &path);
 		    // Methods:
 		    void SetPath(std::vector<Vector> &path);
 		    void Move(double time);
@@ -20,7 +21,7 @@ namespace Navigation
 			Vector position;
 			// Rotation:
 			float rotation;
-		private:
+		//private:
 			// Path:
 			std::vector<Vector> path;
 	};
