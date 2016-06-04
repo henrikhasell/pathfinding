@@ -181,162 +181,31 @@ int main(int argc, char *argv[])
             // Create OpenGL context:
             glfwMakeContextCurrent(window);
 
-            // Initialise OpenGL:
-            glPointSize(5.0f);
-
-            // Initialise projection:
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-
-            gluOrtho2D(0.0, SCREEN_W, SCREEN_H, 0.0);
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-
-
-            double frame_start = glfwGetTime();
             // Start main loop:
             while(glfwWindowShouldClose(window) != GL_TRUE)
             {
+                // Get the time at the
+                // start of the frame.
+                static double frame_start = glfwGetTime();
+
                 glfwPollEvents();
 
-				glClear(GL_COLOR_BUFFER_BIT);
-
-                glPushMatrix();
-                    glScalef(
-                        Navigation::World::TileW,
-                        Navigation::World::TileH, 1.0f
-                    );
-                    for(int x = 0; x < world.width; x++)
-                    {
-                        for(int y = 0; y < world.height; y++)
-                        {
-                            Tile *tile = world.TileMap::GetTile(x, y);
-
-                            glPushMatrix();
-                                if(tile->GetNavigable() == true)
-                                    glColor3f(0.5f, 0.5f, 0.5f);
-                                else
-                                    glColor3f(0.1f, 0.1f, 0.1f);
-                                glTranslatef(x, y, 0.0f);
-                                glBegin(GL_TRIANGLE_STRIP);
-                                    glVertex2f(0.0f, 0.0f);
-                                    glVertex2f(1.0f, 0.0f);
-                                    glVertex2f(0.0f, 1.0f);
-                                    glVertex2f(1.0f, 1.0f);
-                                glEnd();
-                                glColor3f(0.0f, 0.0f, 0.0f);
-                                glBegin(GL_LINE_LOOP);
-                                    glVertex2f(0.0f, 0.0f);
-                                    glVertex2f(1.0f, 0.0f);
-                                    glVertex2f(1.0f, 1.0f);
-                                    glVertex2f(0.0f, 1.0f);
-                                glEnd();
-                            glPopMatrix();
-                        }
-                    }
-                glPopMatrix();
-
-                path.clear();
-                // Calculate a path between the
-                // start and finish vectors if
-                // possible:
-                if(world.CalculatePath(start, finish, path) == true)
-                {
-                    if(smooth_path)
-                    {
-
-                        std::vector<Navigation::Vector> minimal_path;
-
-                        Navigation::Vector previousViewpoint = path[0], currentViewpoint = path[0];
-
-                        minimal_path.push_back(start);
-
-                        for(Navigation::Vector selectedNode : path)
-                        {
-                            if(world.Visible(currentViewpoint, selectedNode) == false)
-                            {
-                                minimal_path.push_back(previousViewpoint);
-                                currentViewpoint = previousViewpoint;
-                            }
-
-                            previousViewpoint = selectedNode;
-                        }
-
-                        minimal_path.push_back(finish);
-
-                        path = minimal_path;
-                    }
-
-                    glColor3f(1.0f, 0.0f, 0.0f);
-                    // Draw the path (line):
-                    glBegin(GL_LINE_STRIP);
-                    for(Navigation::Vector &i : path)
-                    {
-                        glVertex2f(i.x, i.y);
-                    }
-                    glEnd();
-
-                    glColor3f(0.0f, 0.0f, 1.0f);
-                    // Draw the path (vertices):
-                    glBegin(GL_POINTS);
-                    for(Navigation::Vector &i : path)
-                    {
-                        glVertex2f(i.x, i.y);
-                    }
-                    glEnd();
-                }
-                // Draw the start and finish positions of the path.
-                glColor3f(0.0f, 1.0f, 0.0f);
-                glBegin(GL_POINTS);
-                    if(start.x || start.y)
-                        glVertex2f(start.x, start.y);
-                    if(finish.x || finish.y)
-                        glVertex2f(finish.x, finish.y);
-                glEnd();
-
-                for(Navigation::Soldier &soldier : army)
-                {
-                    glPushMatrix();
-                        glTranslatef(
-                            soldier.position.x,
-                            soldier.position.y, 0.0f);
-                        glScalef(
-                            9.0f, 9.0f, 1.0f);
-                        glRotatef(soldier.rotation * 57.2958f,
-                            0.0f, 0.0f, 1.0f);
-                        // Draw the soldier (fill).
-                        glColor3f(0.0f, 1.0f, 1.0f);
-                        glBegin(GL_TRIANGLE_FAN);
-                            for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-                            {
-                                glVertex2f( sinf(i), cosf(i) );
-                            }
-                        glEnd();
-                        // Draw the soldier (outline).
-                        glColor3f(0.0f, 0.0f, 0.0f);
-                        glBegin(GL_LINE_LOOP);
-                            for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-                            {
-                                glVertex2f( sinf(i), cosf(i) );
-                            }
-                        glEnd();
-                        // Draw the soldier (direction).
-                        glBegin(GL_LINES);
-                            glVertex2f(0.0f, 0.0f);
-                            glVertex2f(0.0f, 1.0f);
-                        glEnd();
-                    glPopMatrix();
-                }
-                glfwSwapBuffers(window);
+                // Get the time at the
+                // end of the frame.
                 double frame_end = glfwGetTime();
 
+                // Calculate the elapsed time.
+                double frame_time = frame_end - frame_start;
+
+                // Move every soldier the
+                // appropriate distance.
                 for(Navigation::Soldier &soldier : army)
                 {
-                    soldier.Move(frame_end - frame_start);
+                    soldier.Move(frame_time);
                 }
 
                 std::vector<Navigation::Soldier>::iterator i = army.begin();
+
                 // Iterate over the army array
                 // and remove any soldiers who
                 // have nowhere to walk.
@@ -351,7 +220,10 @@ int main(int argc, char *argv[])
                         i++;
                     }
                 }
-
+                glfwSwapBuffers(window);
+                // Slightly hacky way of ensuring
+                // time steps are accurate. It makes
+                // sense if you think about it.
                 frame_start = frame_end;
             }
         }
