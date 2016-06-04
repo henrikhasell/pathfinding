@@ -300,6 +300,8 @@ int main(int argc, char *argv[])
                         soldier.position.y, 0.0f);
                     glScalef(
                         9.0f, 9.0f, 1.0f);
+                    glRotatef(soldier.rotation * 57.2958f,
+                        0.0f, 0.0f, 1.0f);
                     // Draw the soldier (fill).
                     glColor3f(0.0f, 1.0f, 1.0f);
                     glBegin(GL_TRIANGLE_FAN);

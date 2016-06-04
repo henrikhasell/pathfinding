@@ -18,7 +18,8 @@ void Soldier::Move(double time)
     {
         return;
     }
-
+    // Distance remaining is the total distance
+    // the soldier is able to travel this frame.
     float distance_remaining = MovementSpeed * time;
 
     while(distance_remaining > 0.0f)
@@ -29,13 +30,20 @@ void Soldier::Move(double time)
         }
 
         const Vector &target = path.front();
-
+        // Calculate vector representing
+        // the direction towards the target.
         Vector direction = target - position;
-
+        // The magnitude of the vector is equal
+        // to the distance form the target.
         float distance_to_target = direction.Magnitude();
-
+        // Move the soldier towards the node
+        // and adjust the remaining distance.
         if(distance_to_target > 0.0f)
         {
+            // Update the rotation to face the target.
+            rotation = atan2f(
+                -direction.x, direction.y);
+
             if(distance_to_target < distance_remaining)
             {
                 position = target;
