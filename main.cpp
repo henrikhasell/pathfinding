@@ -8,8 +8,9 @@
 #include <cmath>
 
 #include <GLFW/glfw3.h>
-#include <GL/glu.h>
-#include <GL/gl.h>
+
+#include <horde3d/Horde3D.h>
+#include <horde3d/Horde3DUtils.h>
 
 #include "TileMap.hpp"
 #include "World.hpp"
@@ -181,50 +182,64 @@ int main(int argc, char *argv[])
             // Create OpenGL context:
             glfwMakeContextCurrent(window);
 
-            // Start main loop:
-            while(glfwWindowShouldClose(window) != GL_TRUE)
+            // Initialise Horde3D
+            if(h3dInit() == true)
             {
-                // Get the time at the
-                // start of the frame.
-                static double frame_start = glfwGetTime();
-
-                glfwPollEvents();
-
-                // Get the time at the
-                // end of the frame.
-                double frame_end = glfwGetTime();
-
-                // Calculate the elapsed time.
-                double frame_time = frame_end - frame_start;
-
-                // Move every soldier the
-                // appropriate distance.
-                for(Navigation::Soldier &soldier : army)
+                // Start main loop:
+                while(glfwWindowShouldClose(window) != GL_TRUE)
                 {
-                    soldier.Move(frame_time);
+                    // Get the time at the
+                    // start of the frame.
+                    static double frame_start = glfwGetTime();
+
+                    glfwPollEvents();
+
+                    // Get the time at the
+                    // end of the frame.
+                    double frame_end = glfwGetTime();
+
+                    // Calculate the elapsed time.
+                    double frame_time = frame_end - frame_start;
+
+                    // Move every soldier the
+                    // appropriate distance.
+                    for(Navigation::Soldier &soldier : army)
+                    {
+                        soldier.Move(frame_time);
+                    }
+
+                    std::vector<Navigation::Soldier>::iterator i = army.begin();
+
+                    // Iterate over the army array
+                    // and remove any soldiers who
+                    // have nowhere to walk.
+                    while(army.end() != i)
+                    {
+                        if(i->path.empty() == true)
+                        {
+                            i = army.erase(i);
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+                    glfwSwapBuffers(window);
+                    // Slightly hacky way of ensuring
+                    // time steps are accurate. It makes
+                    // sense if you think about it.
+                    frame_start = frame_end;
                 }
 
-                std::vector<Navigation::Soldier>::iterator i = army.begin();
+                // Write Horde3D log to HTML file.
+                h3dutDumpMessages();
 
-                // Iterate over the army array
-                // and remove any soldiers who
-                // have nowhere to walk.
-                while(army.end() != i)
-                {
-                    if(i->path.empty() == true)
-                    {
-                        i = army.erase(i);
-                    }
-                    else
-                    {
-                        i++;
-                    }
-                }
-                glfwSwapBuffers(window);
-                // Slightly hacky way of ensuring
-                // time steps are accurate. It makes
-                // sense if you think about it.
-                frame_start = frame_end;
+                // Free resources used by Horde3D.
+                h3dRelease();
+            }
+            else
+            {
+                std::cerr << "Failed to initialise Horde3D." << std::endl;
             }
         }
         else
