@@ -1,4 +1,5 @@
 #include "Soldier.hpp"
+#include "Turret.hpp"
 
 using namespace Navigation;
 
@@ -10,6 +11,45 @@ Soldier::Soldier(float x, float y) : position(x, y), rotation(0.0f)
 Soldier::Soldier(float x, float y, std::vector<Vector> &path) : Soldier(x, y)
 {
     SetPath(path);
+}
+
+Soldier::Soldier(const Soldier &soldier) :
+	targetedBy(soldier.targetedBy),
+	position(soldier.position),
+	rotation(soldier.rotation),
+	path(soldier.path)
+{
+	for(Game::Turret *turret : targetedBy)
+		turret->target = this;
+}
+
+Soldier &Soldier::operator=(const Soldier &soldier)
+{
+	for(Game::Turret *turret : targetedBy)
+		if(turret->target == this)
+			turret->target = nullptr;
+
+	targetedBy = soldier.targetedBy;
+
+	for(Game::Turret *turret : targetedBy)
+		turret->target = this;
+
+	position = soldier.position;
+	rotation = soldier.rotation;
+
+	path = soldier.path;
+
+	return *this;
+}
+
+Soldier::~Soldier()
+{
+	// The assignment operator seems to invoke the destructor
+	// after it has finished copying to it's destination.
+	// For this reason, the "if" statement is necessary.
+	for(Game::Turret *turret : targetedBy)
+		if(turret->target == this)
+			turret->target = nullptr;
 }
 
 void Soldier::SetPath(std::vector<Vector> &path)

@@ -9,6 +9,7 @@ namespace Navigation
     struct Vector
     {
         Vector(float x, float y) : x(x), y(y) {}
+	Vector(const Vector &other) : x(other.x), y(other.y) {}
         // Arithmetic operators with vectors:
         Vector operator+(const Vector &other) const {
             return Vector(this->x + other.x, this->y  + other.y); }
