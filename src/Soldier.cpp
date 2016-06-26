@@ -1,5 +1,6 @@
 #include "Soldier.hpp"
 #include "Turret.hpp"
+#include <iostream>
 
 using namespace Game;
 
@@ -10,21 +11,30 @@ Soldier::Soldier(float x, float y) : position(x, y), hitpoints(100.0f), rotation
 
 Soldier::Soldier(float x, float y, std::vector<Navigation::Vector> &path) : Soldier(x, y)
 {
+	std::cout << "[ Constructor] Creating object " << this << std::endl;
     SetPath(path);
 }
 
 Soldier::Soldier(const Soldier &soldier) :
 	targetedBy(soldier.targetedBy),
+	hitpoints(soldier.hitpoints),
 	position(soldier.position),
 	rotation(soldier.rotation),
 	path(soldier.path)
 {
+	std::cout << "[Copy Constructor] Copying " << &soldier << " to " << this << std::endl;
+
 	for(Game::Turret *turret : targetedBy)
 		turret->target = this;
+
+	for(Game::Bullet *bullet : bulletList)
+		bullet->target = this;
 }
 
 Soldier &Soldier::operator=(const Soldier &soldier)
 {
+	std::cout << "[Assignment Operator] Copying " << &soldier << " to " << this << std::endl;
+
 	for(Game::Turret *turret : targetedBy)
 		if(turret->target == this)
 			turret->target = nullptr;
@@ -34,6 +44,10 @@ Soldier &Soldier::operator=(const Soldier &soldier)
 	for(Game::Turret *turret : targetedBy)
 		turret->target = this;
 
+	for(Game::Bullet *bullet : bulletList)
+		bullet->target = this;
+
+	hitpoints = soldier.hitpoints;
 	position = soldier.position;
 	rotation = soldier.rotation;
 
@@ -42,14 +56,24 @@ Soldier &Soldier::operator=(const Soldier &soldier)
 	return *this;
 }
 
+bool Soldier::operator==(const Soldier &soldier)
+{
+	return this == &soldier;
+}
+
 Soldier::~Soldier()
 {
+	std::cout << "[Deconstructor] Deleting object " << this << std::endl;
 	// The assignment operator seems to invoke the destructor
 	// after it has finished copying to it's destination.
 	// For this reason, the "if" statement is necessary.
 	for(Game::Turret *turret : targetedBy)
 		if(turret->target == this)
 			turret->target = nullptr;
+
+	for(Game::Bullet *bullet : bulletList)
+		if(bullet->target == this)
+			bullet->target = nullptr;
 }
 
 void Soldier::SetPath(std::vector<Navigation::Vector> &path)

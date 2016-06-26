@@ -368,6 +368,7 @@ int main(int argc, char *argv[])
 
 						if(i->detonated == true)
 						{
+							i->Explode(world.soldierList);
 							i = world.bulletList.erase(i);
 						}
 						else
