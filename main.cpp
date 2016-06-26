@@ -11,18 +11,11 @@
 #include <GL/glu.h>
 #include <GL/gl.h>
 
-#include "TileMap.hpp"
 #include "World.hpp"
-#include "Soldier.hpp"
-#include "Turret.hpp"
 
 #define PROJECT_NAME "Pathfinding Demo"
 #define SCREEN_W 600
 #define SCREEN_H 600
-
-enum MouseMode{
-	NORMAL, PLACE_WALL, PLACE_FLOOR
-}mouse_mode = PLACE_WALL;
 
 const char TILEMAP_DATA[30 * 30] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -57,31 +50,30 @@ const char TILEMAP_DATA[30 * 30] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
+Game::World world(30, 30, TILEMAP_DATA);
+
+bool smooth_path = true;
 std::vector<Navigation::Vector> path;
-
-std::vector<Navigation::Soldier> army;
-std::vector<Game::Turret> turrets;
-std::vector<Game::Bullet> bullets;
-
-// Structure which represents navigable environment.
-Navigation::World world(30, 30, TILEMAP_DATA);
-
-// Start and finish points of our desired path.
 Navigation::Vector start(0.0f, 0.0f), finish(0.0f, 0.0f);
-
-bool smooth_path = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if(action == GLFW_PRESS)
 	{
+		double xpos;
+		double ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+
 		switch(key)
 		{
 			case GLFW_KEY_SPACE:
 				smooth_path = !smooth_path;
 				break;
 			case GLFW_KEY_S:
-				army.emplace_back(start.x, start.y, path);
+				world.soldierList.emplace_back(start.x, start.y, path);
+				break;
+			case GLFW_KEY_T:
+				world.turretList.emplace_back(xpos, ypos);
 				break;
 		}
 	}
@@ -107,25 +99,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				finish.x = xpos;
 				finish.y = ypos;
 				break;
-			case GLFW_MOUSE_BUTTON_MIDDLE:
-				{
-					Navigation::Vector location(xpos, ypos);
-
-					Tile *tile = world.GetTile(location);
-
-					if(tile)
-					{
-						if(world.GetTile(location)->GetNavigable() == true)
-						{
-							mouse_mode = PLACE_WALL;
-						}
-						else
-						{
-							mouse_mode = PLACE_FLOOR;
-						}
-					}
-				}
-				break;
 		}
 	}
 }
@@ -140,29 +113,6 @@ void cursor_pos_callback(GLFWwindow *window, double x, double y)
 	if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == true)
 	{
 		mouse_button_callback(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, 0);
-	}
-
-	if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == true)
-	{
-		Navigation::Vector location(x, y);
-		// Find the tile under the mouse cursor.
-		Tile *tile = world.GetTile(location);
-
-		if(tile)
-		{
-			switch(mouse_mode)
-			{
-				case NORMAL:
-					// Do nothing!
-					break;
-				case PLACE_FLOOR:
-					tile->SetNavigable(true);
-					break;
-				case PLACE_WALL:
-					tile->SetNavigable(false);
-					break;
-			}
-		}
 	}
 }
 
@@ -197,7 +147,7 @@ int main(int argc, char *argv[])
 			glLoadIdentity();
 
 			// Emplace turret.
-			turrets.emplace_back(50, 50);
+			// turrets.emplace_back(50, 50);
 
 			double frame_start = glfwGetTime();
 			// Start main loop:
@@ -205,18 +155,18 @@ int main(int argc, char *argv[])
 			{
 				glfwPollEvents();
 
-		glClear(GL_COLOR_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT);
 
 				glPushMatrix();
 					glScalef(
-						Navigation::World::TileW,
-						Navigation::World::TileH, 1.0f
+						Navigation::NodeMap::TileW,
+						Navigation::NodeMap::TileH, 1.0f
 					);
-					for(int x = 0; x < world.width; x++)
+					for(int x = 0; x < world.nodeMap.width; x++)
 					{
-						for(int y = 0; y < world.height; y++)
+						for(int y = 0; y < world.nodeMap.height; y++)
 						{
-							Tile *tile = world.TileMap::GetTile(x, y);
+							Tile *tile = world.nodeMap.TileMap::GetTile(x, y);
 
 							glPushMatrix();
 								if(tile->GetNavigable() == true)
@@ -246,7 +196,7 @@ int main(int argc, char *argv[])
 				// Calculate a path between the
 				// start and finish vectors if
 				// possible:
-				if(world.CalculatePath(start, finish, path) == true)
+				if(world.nodeMap.CalculatePath(start, finish, path) == true)
 				{
 					if(smooth_path)
 					{
@@ -259,7 +209,7 @@ int main(int argc, char *argv[])
 
 						for(Navigation::Vector selectedNode : path)
 						{
-							if(world.Visible(currentViewpoint, selectedNode) == false)
+							if(world.nodeMap.Visible(currentViewpoint, selectedNode) == false)
 							{
 								minimal_path.push_back(previousViewpoint);
 								currentViewpoint = previousViewpoint;
@@ -291,6 +241,7 @@ int main(int argc, char *argv[])
 					}
 					glEnd();
 				}
+
 				// Draw the start and finish positions of the path.
 				glColor3f(0.0f, 1.0f, 0.0f);
 				glBegin(GL_POINTS);
@@ -300,31 +251,22 @@ int main(int argc, char *argv[])
 						glVertex2f(finish.x, finish.y);
 				glEnd();
 
-				for(Navigation::Soldier &soldier : army)
+				for(Game::Soldier &soldier : world.soldierList)
 				{
 					glPushMatrix();
-						glTranslatef(
-							soldier.position.x,
-							soldier.position.y, 0.0f);
-						glScalef(
-							9.0f, 9.0f, 1.0f);
-						glRotatef(soldier.rotation * 57.2958f,
-							0.0f, 0.0f, 1.0f);
-						// Draw the soldier (fill).
+						glTranslatef(soldier.position.x, soldier.position.y, 0.0f);
+						glScalef(9.0f, 9.0f, 1.0f);
+						glRotatef(soldier.rotation * 57.2958f, 0.0f, 0.0f, 1.0f);
 						glColor3f(0.0f, 1.0f, 1.0f);
 						glBegin(GL_TRIANGLE_FAN);
 							for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-							{
 								glVertex2f( sinf(i), cosf(i) );
-							}
 						glEnd();
 						// Draw the soldier (outline).
 						glColor3f(0.0f, 0.0f, 0.0f);
 						glBegin(GL_LINE_LOOP);
 							for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-							{
 								glVertex2f( sinf(i), cosf(i) );
-							}
 						glEnd();
 						// Draw the soldier (direction).
 						glBegin(GL_LINES);
@@ -334,15 +276,15 @@ int main(int argc, char *argv[])
 					glPopMatrix();
 				}
 
-				for(Game::Turret &turret : turrets)
+				for(Game::Turret &turret : world.turretList)
 				{
 					glPushMatrix();
 						glTranslatef(
 							turret.position.x,
 							turret.position.y, 0.0f);
 						glScalef(
-							Navigation::World::TileW,
-							Navigation::World::TileW, 0.0f);
+							Navigation::NodeMap::TileW,
+							Navigation::NodeMap::TileW, 0.0f);
 			glColor3f(0.2f, 0.2f, 0.2f);
 						glBegin(GL_TRIANGLE_STRIP);
 							glVertex2f(-0.5f,-0.5f);
@@ -378,49 +320,61 @@ int main(int argc, char *argv[])
 
 				glColor3f(0.0f, 0.0f, 1.0f);
 				glBegin(GL_POINTS);
-				for(Game::Bullet &bullet : bullets)
+				for(Game::Bullet &bullet : world.bulletList)
 				{
-					glVertex2f(bullet.position.x, bullet.position.y);
+					glVertex2f(
+						bullet.position.x, bullet.position.y);
 				}
 				glEnd();
 
 				glfwSwapBuffers(window);
+
 				double frame_end = glfwGetTime();
 
-				for(Navigation::Soldier &soldier : army)
-				{
-					soldier.Move(frame_end - frame_start);
-				}
+				double elapsedTime = frame_end - frame_start;
 
-				for(Game::Turret &turret : turrets)
 				{
-					turret.Work(frame_end - frame_start, army, bullets);
-				}
+					std::vector<Game::Soldier>::iterator i =
+						world.soldierList.begin();
 
-				std::vector<Navigation::Soldier>::iterator i = army.begin();
-				// Iterate over the army array
-				// and remove any soldiers who
-				// have nowhere to walk.
-				while(army.end() != i)
-				{
-					if(i->path.empty() == true)
+					while(world.soldierList.end() != i)
 					{
-						i = army.erase(i);
-					}
-					else
-					{
-						i++;
+						i->Move(elapsedTime);
+
+						if(i->path.empty() == true)
+						{
+							i = world.soldierList.erase(i);
+						}
+						else
+						{
+							i++;
+						}
 					}
 				}
 
-				std::vector<Game::Bullet>::iterator j = bullets.begin();
+				for(Game::Turret &turret : world.turretList)
+				{
+					turret.Work(elapsedTime,
+						world.soldierList, world.bulletList);
+				}
 
-				while(bullets.end() != j){
-					j->Work(frame_end - frame_start);
-					if(j->detonated == true)
-						j = bullets.erase(j);
-					else
-						j++;
+				{
+					std::vector<Game::Bullet>::iterator i =
+						world.bulletList.begin();
+
+					while(world.bulletList.end() != i)
+					{
+						i->Work(elapsedTime);
+
+						if(i->detonated == true)
+						{
+							i = world.bulletList.erase(i);
+						}
+						else
+						{
+							i++;
+						}
+					}
 				}
 
 				frame_start = frame_end;

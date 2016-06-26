@@ -3,7 +3,7 @@
 
 using namespace Game;
 
-Bullet::Bullet(Navigation::Vector &position, Navigation::Soldier &target) :
+Bullet::Bullet(Navigation::Vector &position, Soldier &target) :
 	destination(target.position),
 	direction(target.position - position),
 	position(position),

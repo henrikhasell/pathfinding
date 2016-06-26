@@ -1,14 +1,14 @@
 #include "Soldier.hpp"
 #include "Turret.hpp"
 
-using namespace Navigation;
+using namespace Game;
 
-Soldier::Soldier(float x, float y) : position(x, y), rotation(0.0f)
+Soldier::Soldier(float x, float y) : position(x, y), hitpoints(100.0f), rotation(0.0f)
 {
 
 }
 
-Soldier::Soldier(float x, float y, std::vector<Vector> &path) : Soldier(x, y)
+Soldier::Soldier(float x, float y, std::vector<Navigation::Vector> &path) : Soldier(x, y)
 {
     SetPath(path);
 }
@@ -52,7 +52,7 @@ Soldier::~Soldier()
 			turret->target = nullptr;
 }
 
-void Soldier::SetPath(std::vector<Vector> &path)
+void Soldier::SetPath(std::vector<Navigation::Vector> &path)
 {
     this->path = path;
 }
@@ -74,10 +74,10 @@ void Soldier::Move(double time)
             break;
         }
 
-        const Vector &target = path.front();
+        const Navigation::Vector &target = path.front();
         // Calculate vector representing
         // the direction towards the target.
-        Vector direction = target - position;
+        Navigation::Vector direction = target - position;
         // The magnitude of the vector is equal
         // to the distance form the target.
         float distance_to_target = direction.Magnitude();

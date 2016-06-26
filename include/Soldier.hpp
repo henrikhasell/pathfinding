@@ -1,38 +1,35 @@
 #ifndef SOLDIER_HPP
 #define SOLDIER_HPP
 
+#include "Vector.hpp"
 #include "World.hpp"
+#include <vector>
 
 namespace Game
 {
 	class Turret;
-};
 
-namespace Navigation
-{
 	class Soldier
 	{
 		public:
 		    // Constant expressions:
-		    static constexpr float MovementSpeed = 60.0f;
+		    static constexpr float MovementSpeed = 40.0f;
 		    static constexpr float RotationSpeed = 0.1f;
 		    // Constructor:
 		    Soldier(float x, float y);
-		    Soldier(float x, float y, std::vector<Vector> &path);
-                    Soldier(const Soldier &soldier);
-                    Soldier &operator=(const Soldier &soldier);
-                    ~Soldier();
+		    Soldier(float x, float y, std::vector<Navigation::Vector> &path);
+            Soldier(const Soldier &soldier);
+            Soldier &operator=(const Soldier &soldier);
+            ~Soldier();
 		    // Methods:
-		    void SetPath(std::vector<Vector> &path);
+		    void SetPath(std::vector<Navigation::Vector> &path);
 		    void Move(double time);
-			// Position:
-			Vector position;
-			// Rotation:
-			float rotation;
 		//private:
-			std::vector<Game::Turret*> targetedBy;
-			// Path:
-			std::vector<Vector> path;
+			std::vector<Turret*> targetedBy;
+			std::vector<Navigation::Vector> path;
+			Navigation::Vector position;
+			float hitpoints;
+			float rotation;
 	};
 };
 

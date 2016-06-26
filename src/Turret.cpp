@@ -2,20 +2,26 @@
 #include "Soldier.hpp"
 #include <cfloat>
 #include <iostream>
+#include <algorithm>
 
 using namespace Game;
 
-Turret::Turret(Navigation::Vector &position) : Turret(position.x, position.y)
+Turret::Turret(Navigation::Vector &position) :
+	Turret(position.x, position.y)
 {
 
 }
 
-Turret::Turret(float x, float y) : position(x, y), target(nullptr), cooldown(0.0)
+Turret::Turret(float x, float y) :
+	position(x, y),
+	target(nullptr),
+	rotation(0.0f),
+	cooldown(0.0)
 {
 
 }
-#include <algorithm>
-void Turret::Work(double time, std::vector<Navigation::Soldier> &selection, std::vector<Game::Bullet> &bullets)
+
+void Turret::Work(double time, std::vector<Soldier> &selection, std::vector<Bullet> &bullets)
 {
 	if(TargetInRange() == false)
 	{
@@ -31,8 +37,8 @@ void Turret::Work(double time, std::vector<Navigation::Soldier> &selection, std:
 		}
 
 		float shortestDistance = FLT_MAX;
-		Navigation::Soldier *nearestSoldier = nullptr;
-		for(Navigation::Soldier &soldier : selection)
+		Soldier *nearestSoldier = nullptr;
+		for(Soldier &soldier : selection)
 		{
 			Navigation::Vector relativePosition = position - soldier.position;
 
@@ -90,7 +96,7 @@ float Turret::GetRange()
 	return 200.0f;
 }
 
-void Turret::FireBullet(Navigation::Soldier &target, std::vector<Game::Bullet> &bullets)
+void Turret::FireBullet(Soldier &target, std::vector<Bullet> &bullets)
 {
 	Navigation::Vector nozzleVector = target.position - position;
 	nozzleVector.Normalise();
@@ -99,7 +105,7 @@ void Turret::FireBullet(Navigation::Soldier &target, std::vector<Game::Bullet> &
 	bullets.emplace_back(nozzleVector, target);
 }
 
-void Turret::TargetSoldier(Navigation::Soldier &soldier)
+void Turret::TargetSoldier(Soldier &soldier)
 {
 	target = &soldier;
 }

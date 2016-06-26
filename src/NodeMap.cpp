@@ -1,19 +1,19 @@
-#include "World.hpp"
+#include "NodeMap.hpp"
 #include <cmath>
 
 using namespace Navigation;
 
-World::World(int width, int height) : TileMap(width, height)
+NodeMap::NodeMap(int width, int height) : TileMap(width, height)
 {
 
 }
 
-World::World(int width, int height, const char data[]) : TileMap(width, height, data)
+NodeMap::NodeMap(int width, int height, const char data[]) : TileMap(width, height, data)
 {
 
 }
 
-Tile *World::GetTile(Vector &position)
+Tile *NodeMap::GetTile(Vector &position)
 {
     return TileMap::GetTile(
         (int)(position.x / TileW),
@@ -21,7 +21,7 @@ Tile *World::GetTile(Vector &position)
     );
 }
 
-bool World::CalculatePath(Vector &start, Vector &finish)
+bool NodeMap::CalculatePath(Vector &start, Vector &finish)
 {
     Tile *start_tile = GetTile(start);
 
@@ -40,7 +40,7 @@ bool World::CalculatePath(Vector &start, Vector &finish)
     return TileMap::CalculatePath(start_tile, finish_tile);
 }
 
-bool World::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &path)
+bool NodeMap::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &path)
 {
     Tile *start_tile = GetTile(start);
 
@@ -74,7 +74,7 @@ bool World::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &pa
 }
 
 
-bool World::Visible(Vector &start, Vector &finish)
+bool NodeMap::Visible(Vector &start, Vector &finish)
 {
     Vector ray_direction = finish - start;
     ray_direction.Normalise();

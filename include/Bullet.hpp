@@ -1,7 +1,7 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "World.hpp"
+#include "Vector.hpp"
 #include "Soldier.hpp"
 
 namespace Game
@@ -9,9 +9,10 @@ namespace Game
 	class Bullet
 	{
 		public:
-			static constexpr float Speed = 500.0f;//600.0f;
+			static constexpr float Speed = 200.0f;//600.0f;
+			static constexpr float Damage = 5.0f;
 
-			Bullet(Navigation::Vector &start, Navigation::Soldier &target);
+			Bullet(Navigation::Vector &start, Soldier &target);
 			void Work(double time);
 		// private:
 			Navigation::Vector destination;

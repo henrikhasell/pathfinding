@@ -1,41 +1,36 @@
 #ifndef TURRET_HPP
 #define TURRET_HPP
 
-#include <vector>
+#include "Vector.hpp"
 #include "World.hpp"
-#include "Bullet.hpp"
-
-namespace Navigation
-{
-	class Soldier;
-};
+#include <vector>
 
 namespace Game
 {
 	class Turret
 	{
 		public:
-			static float constexpr NozzleLength = Navigation::World::TileW;
+			static float constexpr NozzleLength = 20.0f;
 
 			Turret(Navigation::Vector &position);
 			Turret(float x, float y);
 			void Work(
 				double time,
-				std::vector<Navigation::Soldier> &selection,
-				std::vector<Game::Bullet> &bullets);
+				std::vector<Soldier> &selection,
+				std::vector<Bullet> &bullets);
 			bool TargetInRange();
 			virtual float GetRange();
 		protected:
 			virtual void FireBullet(
-				Navigation::Soldier &target,
-				std::vector<Game::Bullet> &bullets);
+				Soldier &target,
+				std::vector<Bullet> &bullets);
 			void TargetSoldier(
-				Navigation::Soldier &soldier);
+				Soldier &soldier);
 		public: // private: Temporary~!
 			Navigation::Vector position;
 			float rotation;
 			double cooldown;
-			Navigation::Soldier *target;
+			Soldier *target;
 	};
 };
 
