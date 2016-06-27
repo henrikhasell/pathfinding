@@ -22,7 +22,7 @@ Bullet::Bullet(const Bullet &other) :
 	target(other.target),
 	detonated(other.detonated)
 {
-	if(other.target)
+	if(target)
 	{
 		target->bulletList.push_back(this);
 	}
@@ -32,13 +32,11 @@ Bullet::~Bullet()
 {
 	if(target)
 	{
-			std::vector<Bullet*> &bulletList = target->bulletList;
+			std::vector<Bullet*>::iterator location =
+				std::find(target->bulletList.begin(), target->bulletList.end(), this);
 
-			std::vector<Bullet*>::iterator location
-				= std::find(bulletList.begin(), bulletList.end(), this);
-
-			if(location != bulletList.end())
-				bulletList.erase(location);
+			if(location != target->bulletList.end())
+				target->bulletList.erase(location);
 	}
 }
 
@@ -51,20 +49,18 @@ Bullet &Bullet::operator=(const Bullet &other)
 
 	if(target)
 	{
-		std::vector<Bullet*> &bulletList = target->bulletList;
+		std::vector<Bullet*>::iterator location =
+			std::find(target->bulletList.begin(), target->bulletList.end(), this);
 
-		std::vector<Bullet*>::iterator location
-			= std::find(bulletList.begin(), bulletList.end(), this);
-
-		if(location != bulletList.end())
-			bulletList.erase(location);
+		if(location != target->bulletList.end())
+			target->bulletList.erase(location);
 	}
 
 	target = other.target;
 
 	if(target)
 	{
-		target->bulletList.emplace_back(this);
+		target->bulletList.push_back(this);
 	}
 
 	return *this;
@@ -101,13 +97,13 @@ void Bullet::Explode(std::vector<Soldier> &soldierList)
 
 			if(target->hitpoints <= 0.0f)
 			{
-				Soldier &ref = *target;
-
 				std::vector<Soldier>::iterator location =
-					 std::find(soldierList.begin(), soldierList.end(), ref);
+					 std::find(soldierList.begin(), soldierList.end(), *target);
 
 				if(soldierList.end() != location)
 					soldierList.erase(location);
+
+				target = nullptr;
 			}
 		}
 	}

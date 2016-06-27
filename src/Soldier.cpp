@@ -11,7 +11,7 @@ Soldier::Soldier(float x, float y) : position(x, y), hitpoints(100.0f), rotation
 
 Soldier::Soldier(float x, float y, std::vector<Navigation::Vector> &path) : Soldier(x, y)
 {
-	std::cout << "[ Constructor] Creating object " << this << std::endl;
+	//std::cout << "[ Constructor] Creating object " << this << std::endl;
     SetPath(path);
 }
 
@@ -22,7 +22,7 @@ Soldier::Soldier(const Soldier &soldier) :
 	rotation(soldier.rotation),
 	path(soldier.path)
 {
-	std::cout << "[Copy Constructor] Copying " << &soldier << " to " << this << std::endl;
+	//std::cout << "[Copy Constructor] Copying " << &soldier << " to " << this << std::endl;
 
 	for(Game::Turret *turret : targetedBy)
 		turret->target = this;
@@ -33,19 +33,26 @@ Soldier::Soldier(const Soldier &soldier) :
 
 Soldier &Soldier::operator=(const Soldier &soldier)
 {
-	std::cout << "[Assignment Operator] Copying " << &soldier << " to " << this << std::endl;
+	//std::cout << "[Assignment Operator] Copying " << &soldier << " to " << this << std::endl;
 
 	for(Game::Turret *turret : targetedBy)
 		if(turret->target == this)
 			turret->target = nullptr;
 
+	for(Game::Bullet *bullet : bulletList)
+		if(bullet->target == this)
+			bullet->target = nullptr;
+
 	targetedBy = soldier.targetedBy;
+	bulletList = soldier.bulletList;
 
 	for(Game::Turret *turret : targetedBy)
-		turret->target = this;
+		if(turret->target == &soldier)
+			turret->target = this;
 
 	for(Game::Bullet *bullet : bulletList)
-		bullet->target = this;
+		if(bullet->target == &soldier)
+			bullet->target = this;
 
 	hitpoints = soldier.hitpoints;
 	position = soldier.position;
@@ -63,10 +70,6 @@ bool Soldier::operator==(const Soldier &soldier)
 
 Soldier::~Soldier()
 {
-	std::cout << "[Deconstructor] Deleting object " << this << std::endl;
-	// The assignment operator seems to invoke the destructor
-	// after it has finished copying to it's destination.
-	// For this reason, the "if" statement is necessary.
 	for(Game::Turret *turret : targetedBy)
 		if(turret->target == this)
 			turret->target = nullptr;

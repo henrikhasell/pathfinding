@@ -21,6 +21,49 @@ Turret::Turret(float x, float y) :
 
 }
 
+Turret::Turret(const Turret &other) :
+	position(other.position),
+	rotation(other.rotation),
+	cooldown(other.cooldown),
+	target(other.target)
+{
+	if(target)
+		target->targetedBy.push_back(this);
+}
+
+Turret::~Turret()
+{
+	if(target)
+	{
+		std::vector<Game::Turret*>::iterator location =
+			std::find(target->targetedBy.begin(), target->targetedBy.end(), this);
+
+		if(location != target->targetedBy.end())
+			target->targetedBy.erase(location);
+	}
+}
+
+Turret &Turret::operator=(const Turret &other)
+{
+	position = other.position;
+	rotation = other.rotation;
+	cooldown = other.cooldown;
+
+	if(target)
+	{
+		std::vector<Game::Turret*>::iterator location =
+			std::find(target->targetedBy.begin(), target->targetedBy.end(), this);
+
+		if(location != target->targetedBy.end())
+			target->targetedBy.erase(location);
+	}
+
+	target = other.target;
+
+	if(target)
+		target->targetedBy.push_back(this);
+}
+
 void Turret::Work(double time, std::vector<Soldier> &selection, std::vector<Bullet> &bullets)
 {
 	if(TargetInRange() == false)

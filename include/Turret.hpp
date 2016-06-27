@@ -14,6 +14,9 @@ namespace Game
 
 			Turret(Navigation::Vector &position);
 			Turret(float x, float y);
+			Turret(const Turret &other);
+			~Turret();
+			Turret &operator=(const Turret &other);
 			void Work(
 				double time,
 				std::vector<Soldier> &selection,
