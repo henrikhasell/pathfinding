@@ -13,8 +13,8 @@ namespace Game
 	{
 		public:
 		    // Constant expressions:
+		    static constexpr float MaximumHitpoints = 400.0f;
 		    static constexpr float MovementSpeed = 40.0f;
-		    static constexpr float RotationSpeed = 0.1f;
 		    // Constructor:
 		    Soldier(float x, float y);
 		    Soldier(float x, float y, std::vector<Navigation::Vector> &path);

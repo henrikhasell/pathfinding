@@ -107,14 +107,35 @@ void Turret::Work(double time, std::vector<Soldier> &selection, std::vector<Bull
 
 	if(target)
 	{
+		cooldown -= time;
+		bool facingTarget = false;
 		Navigation::Vector direction = position - target->position;
 		direction /= direction.Magnitude();
 
-		rotation = atan2f(-direction.x, direction.y);
+		float desiredRotation = atan2f(-direction.x, direction.y);
 
-		cooldown -= time;
+		float delta = rotation - desiredRotation;
 
-		if(cooldown <= 0.0)
+		float deltaAngle = atan2(sin(delta), cos(delta));
+
+		if(fabs(deltaAngle) < RotationSpeed)
+		{
+			rotation = desiredRotation;
+			facingTarget = true;
+		}
+		else
+		{
+			if(deltaAngle < 0)
+			{
+				rotation += RotationSpeed;
+			}
+			else
+			{
+				rotation -= RotationSpeed;
+			}
+		}
+
+		if(facingTarget && cooldown <= 0.0)
 		{
 			cooldown = 0.25;
 			FireBullet(*target, bullets);

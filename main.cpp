@@ -255,23 +255,42 @@ int main(int argc, char *argv[])
 				{
 					glPushMatrix();
 						glTranslatef(soldier.position.x, soldier.position.y, 0.0f);
-						glScalef(9.0f, 9.0f, 1.0f);
-						glRotatef(soldier.rotation * 57.2958f, 0.0f, 0.0f, 1.0f);
-						glColor3f(0.0f, 1.0f, 1.0f);
-						glBegin(GL_TRIANGLE_FAN);
-							for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-								glVertex2f( sinf(i), cosf(i) );
-						glEnd();
-						// Draw the soldier (outline).
+						glPushMatrix();
+							glScalef(9.0f, 9.0f, 1.0f);
+							glRotatef(soldier.rotation * 57.2958f, 0.0f, 0.0f, 1.0f);
+							glColor3f(0.0f, 1.0f, 1.0f);
+							glBegin(GL_TRIANGLE_FAN);
+								for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
+									glVertex2f( sinf(i), cosf(i) );
+							glEnd();
+							// Draw the soldier (outline).
+							glColor3f(0.0f, 0.0f, 0.0f);
+							glBegin(GL_LINE_LOOP);
+								for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
+									glVertex2f( sinf(i), cosf(i) );
+							glEnd();
+							// Draw the soldier (direction).
+							glBegin(GL_LINES);
+								glVertex2f(0.0f, 0.0f);
+								glVertex2f(0.0f, 1.0f);
+							glEnd();
+						glPopMatrix();
+						glTranslatef(-10.0f, -15.0f, 0.0f);
 						glColor3f(0.0f, 0.0f, 0.0f);
-						glBegin(GL_LINE_LOOP);
-							for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-								glVertex2f( sinf(i), cosf(i) );
-						glEnd();
-						// Draw the soldier (direction).
-						glBegin(GL_LINES);
+						glScalef(20.0f, 5.0f, 1.0f);
+						glBegin(GL_TRIANGLE_STRIP);
 							glVertex2f(0.0f, 0.0f);
+							glVertex2f(1.0f, 0.0f);
 							glVertex2f(0.0f, 1.0f);
+							glVertex2f(1.0f, 1.0f);
+						glEnd();
+						glColor3f(1.0f, 0.0f, 0.0f);
+						glScalef(soldier.hitpoints / Game::Soldier::MaximumHitpoints, 1.0f, 1.0f);
+						glBegin(GL_TRIANGLE_STRIP);
+							glVertex2f(0.0f, 0.0f);
+							glVertex2f(1.0f, 0.0f);
+							glVertex2f(0.0f, 1.0f);
+							glVertex2f(1.0f, 1.0f);
 						glEnd();
 					glPopMatrix();
 				}

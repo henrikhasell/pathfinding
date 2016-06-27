@@ -4,7 +4,7 @@
 
 using namespace Game;
 
-Soldier::Soldier(float x, float y) : position(x, y), hitpoints(100.0f), rotation(0.0f)
+Soldier::Soldier(float x, float y) : position(x, y), hitpoints(MaximumHitpoints), rotation(0.0f)
 {
 
 }
