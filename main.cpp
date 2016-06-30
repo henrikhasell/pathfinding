@@ -12,6 +12,7 @@
 #include <GL/gl.h>
 
 #include "World.hpp"
+#include "Text.hpp"
 
 #define PROJECT_NAME "Pathfinding Demo"
 #define SCREEN_W 600
@@ -49,7 +50,7 @@
 // 	1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 // 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 // };
-// 
+//
 // Game::World world(30, 30, TILEMAP_DATA);
 
 const char TILEMAP_DATA[20 * 20] = {
@@ -74,7 +75,7 @@ const char TILEMAP_DATA[20 * 20] = {
        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1
 };
- 
+
 Game::World world(20, 20, TILEMAP_DATA);
 
 bool smooth_path = true;
@@ -98,7 +99,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				world.soldierList.emplace_back(start.x, start.y, path);
 				break;
 			case GLFW_KEY_T:
-				world.turretList.emplace_back(xpos, ypos);
+				if(world.money >= 20)
+				{
+					Tile *tile =
+						world.nodeMap.GetTile(Navigation::Vector(xpos, ypos));
+
+					if(tile->GetNavigable() == false)
+					{
+						world.turretList.emplace_back(
+							tile->GetX() * Navigation::NodeMap::TileW + 15.0f,
+							tile->GetY() * Navigation::NodeMap::TileH + 15.0f
+						);
+						world.money -= 20;
+					}
+				}
 				break;
 		}
 	}
@@ -160,7 +174,14 @@ int main(int argc, char *argv[])
 			glfwMakeContextCurrent(window);
 
 			// Initialise OpenGL:
+			glEnable(GL_TEXTURE_2D);
+			glEnable(GL_COLOR_MATERIAL);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glPointSize(5.0f);
+
+			// Load character textures:
+			LoadCharacterTextures();
 
 			// Initialise projection:
 			glMatrixMode(GL_PROJECTION);
@@ -370,6 +391,21 @@ int main(int argc, char *argv[])
 						bullet.position.x, bullet.position.y);
 				}
 				glEnd();
+
+				glPushMatrix();
+					glScalef(8.0f, 8.0f, 1.0f);
+					glTranslatef(0.5f, 0.5f, 0.0f);
+					glColor3f(1.0f, 1.0f, 1.0f);
+					RenderString("Hello, world!");
+					glTranslatef(0.0f, 1.5f, 0.0f);
+					RenderString("Press \"T\" to spawn turrets.");
+					glTranslatef(0.0f, 1.5f, 0.0f);
+					RenderString("Press \"S\" to spawn soldiers.");
+					glTranslatef(0.0f, 1.5f, 0.0f);
+					glScalef(2.0f, 2.0f, 1.0f);
+					glColor3f(1.0f, 1.0f, 1.0f);
+					RenderFormattedString("Current funds: $%d", world.money);
+				glPopMatrix();
 
 				glfwSwapBuffers(window);
 

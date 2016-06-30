@@ -17,7 +17,7 @@ namespace Navigation
             NodeMap(int width, int height);
             NodeMap(int width, int height, const char data[]);
             // Getters:
-            Tile *GetTile(Vector &position);
+            Tile *GetTile(const Vector &position);
             // Pathfinding:
             bool CalculatePath(Vector &start, Vector &finish);
             bool CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &path);

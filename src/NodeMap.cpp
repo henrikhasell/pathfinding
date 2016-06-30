@@ -13,7 +13,7 @@ NodeMap::NodeMap(int width, int height, const char data[]) : TileMap(width, heig
 
 }
 
-Tile *NodeMap::GetTile(Vector &position)
+Tile *NodeMap::GetTile(const Vector &position)
 {
     return TileMap::GetTile(
         (int)(position.x / TileW),
