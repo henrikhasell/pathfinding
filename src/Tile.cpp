@@ -19,23 +19,23 @@ float Tile::GetCost()
     return cost;
 }
 
-void Tile::SetNavigable(bool navigable)
+void Tile::SetType(Type type)
 {
-    this->navigable = navigable;
+    this->type = type;
 }
 
-bool Tile::GetNavigable()
+Tile::Type Tile::GetType()
 {
-    return navigable;
+    return type;
 }
 
-void Tile::Initialise(int x, int y, bool navigable)
+void Tile::Initialise(int x, int y, Type type)
 {
     // Set tile position:
     this->x = x;
     this->y = y;
     // Set navigable boolean:
-    this->navigable = navigable;
+    this->type = type;
     // Set parent and cost:
     Reset();
 }
@@ -50,7 +50,7 @@ void Tile::Reset()
 
 bool Tile::SetParent(Tile *parent, float cost)
 {
-    if(navigable)
+    if(type == ROAD)
     {
         float total_cost = parent->cost + cost;
 

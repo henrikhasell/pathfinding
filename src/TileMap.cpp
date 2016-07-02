@@ -11,7 +11,7 @@ TileMap::TileMap(int width, int height) : width(width), height(height)
     {
         for(int y = 0; y < height; y++)
         {
-            GetTile(x, y)->Initialise(x, y, true);
+            GetTile(x, y)->Initialise(x, y, Tile::WALL);
         }
     }
 }
@@ -22,9 +22,20 @@ TileMap::TileMap(int width, int height, const char data[]) : TileMap(width, heig
     {
         for(int y = 0; y < height; y++)
         {
-            const char &navigable = data[x + width * y];
+			Tile *tile = GetTile(x, y);
+
             // Set the tile navigability based on the data.
-            GetTile(x, y)->SetNavigable(navigable == 0);
+            switch(data[x + width * y])
+            {
+				case 0:
+					tile->SetType(Tile::ROAD); break;
+				case 1:
+					tile->SetType(Tile::WALL); break;
+				case 2:
+					tile->SetType(Tile::TURRET); break;
+				default:
+					tile->SetType(Tile::ROAD); break;
+			}
         }
     }
 }

@@ -107,7 +107,7 @@ bool NodeMap::Visible(Vector &start, Vector &finish)
         int X = current_tile->GetX();
         int Y = current_tile->GetY();
 
-        if(current_tile->GetNavigable() == false)
+        if(current_tile->GetType() != Tile::ROAD)
         {
             return false;
         }

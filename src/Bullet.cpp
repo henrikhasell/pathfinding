@@ -66,7 +66,7 @@ Bullet &Bullet::operator=(const Bullet &other)
 	return *this;
 }
 
-void Bullet::Work(double time)
+void Bullet::Work(double time, World &world)
 {
 	double distanceAvailable = time * Bullet::Speed;
 
@@ -81,30 +81,35 @@ void Bullet::Work(double time)
 	{
 		position += direction * distanceAvailable;
 	}
+	Explode(world);
 }
 
-void Bullet::Explode(std::vector<Soldier> &soldierList)
+void Bullet::Explode(World &world)
 {
-
 	if(target)
 	{
 		float distance = (position - target->position).Magnitude();
 
-		if(distance < 20.0f)
+		if(distance < Soldier::Radius)
 		{
-
 			target->hitpoints -= 10.0f;
 
 			if(target->hitpoints <= 0.0f)
 			{
 				std::vector<Soldier>::iterator location =
-					 std::find(soldierList.begin(), soldierList.end(), *target);
+					 std::find(world.soldierList.begin(), world.soldierList.end(), *target);
 
-				if(soldierList.end() != location)
-					soldierList.erase(location);
+				if(world.soldierList.end() != location)
+				{
+					world.soldierList.erase(location);
+				}
+
+				world.money += 5;
 
 				target = nullptr;
 			}
+
+			detonated = true;
 		}
 	}
 }

@@ -4,19 +4,18 @@
 
 using namespace Game;
 
-Soldier::Soldier(float x, float y) : position(x, y), hitpoints(MaximumHitpoints), rotation(0.0f)
+Soldier::Soldier(const Navigation::Vector &position, const std::vector<Navigation::Vector> &path) :
+	hitpoints(MaximumHitpoints),
+	position(position),
+	rotation(0.0f),
+	path(path)
 {
-
-}
-
-Soldier::Soldier(float x, float y, std::vector<Navigation::Vector> &path) : Soldier(x, y)
-{
-	//std::cout << "[ Constructor] Creating object " << this << std::endl;
-    SetPath(path);
+	//std::cout << "[Constructor] Creating soldier " << this << std::endl;
 }
 
 Soldier::Soldier(const Soldier &soldier) :
-	targetedBy(soldier.targetedBy),
+	turretList(soldier.turretList),
+	bulletList(soldier.bulletList),
 	hitpoints(soldier.hitpoints),
 	position(soldier.position),
 	rotation(soldier.rotation),
@@ -24,7 +23,7 @@ Soldier::Soldier(const Soldier &soldier) :
 {
 	//std::cout << "[Copy Constructor] Copying " << &soldier << " to " << this << std::endl;
 
-	for(Game::Turret *turret : targetedBy)
+	for(Game::Turret *turret : turretList)
 		turret->target = this;
 
 	for(Game::Bullet *bullet : bulletList)
@@ -35,7 +34,7 @@ Soldier &Soldier::operator=(const Soldier &soldier)
 {
 	//std::cout << "[Assignment Operator] Copying " << &soldier << " to " << this << std::endl;
 
-	for(Game::Turret *turret : targetedBy)
+	for(Game::Turret *turret : turretList)
 		if(turret->target == this)
 			turret->target = nullptr;
 
@@ -43,10 +42,10 @@ Soldier &Soldier::operator=(const Soldier &soldier)
 		if(bullet->target == this)
 			bullet->target = nullptr;
 
-	targetedBy = soldier.targetedBy;
+	turretList = soldier.turretList;
 	bulletList = soldier.bulletList;
 
-	for(Game::Turret *turret : targetedBy)
+	for(Game::Turret *turret : turretList)
 		if(turret->target == &soldier)
 			turret->target = this;
 
@@ -70,7 +69,7 @@ bool Soldier::operator==(const Soldier &soldier)
 
 Soldier::~Soldier()
 {
-	for(Game::Turret *turret : targetedBy)
+	for(Game::Turret *turret : turretList)
 		if(turret->target == this)
 			turret->target = nullptr;
 
@@ -113,8 +112,7 @@ void Soldier::Move(double time)
         if(distance_to_target > 0.0f)
         {
             // Update the rotation to face the target.
-            rotation = atan2f(
-                -direction.x, direction.y);
+            rotation = atan2f(-direction.x, direction.y);
 
             if(distance_to_target < distance_remaining)
             {

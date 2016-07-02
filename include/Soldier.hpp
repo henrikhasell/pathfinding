@@ -2,12 +2,13 @@
 #define SOLDIER_HPP
 
 #include "Vector.hpp"
-#include "World.hpp"
 #include <vector>
 
 namespace Game
 {
 	class Turret;
+	class Bullet;
+	class World;
 
 	class Soldier
 	{
@@ -15,18 +16,23 @@ namespace Game
 		    // Constant expressions:
 		    static constexpr float MaximumHitpoints = 400.0f;
 		    static constexpr float MovementSpeed = 40.0f;
+		    static constexpr float Radius = 9.0f;
+
 		    // Constructor:
-		    Soldier(float x, float y);
-		    Soldier(float x, float y, std::vector<Navigation::Vector> &path);
-            Soldier(const Soldier &soldier);
-            Soldier &operator=(const Soldier &soldier);
+		    Soldier(
+				const Navigation::Vector &position,
+				const std::vector<Navigation::Vector> &path
+			);
+			Soldier(const Soldier &soldier);
+			Soldier &operator=(const Soldier &soldier);
 			bool operator==(const Soldier &soldier);
-            ~Soldier();
-		    // Methods:
-		    void SetPath(std::vector<Navigation::Vector> &path);
-		    void Move(double time);
+			~Soldier();
+
+			// Methods:
+			void SetPath(std::vector<Navigation::Vector> &path);
+			void Move(double time);
 		//private:
-			std::vector<Turret*> targetedBy;
+			std::vector<Turret*> turretList;
 			std::vector<Bullet*> bulletList;
 			std::vector<Navigation::Vector> path;
 			Navigation::Vector position;

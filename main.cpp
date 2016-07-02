@@ -80,7 +80,7 @@ Game::World world(20, 20, TILEMAP_DATA);
 
 bool smooth_path = true;
 std::vector<Navigation::Vector> path;
-Navigation::Vector start(0.0f, 0.0f), finish(0.0f, 0.0f);
+Navigation::Vector start(495.0f, 15.0f), finish(495.0f, 585.0f);
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -88,6 +88,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		double xpos;
 		double ypos;
+
 		glfwGetCursorPos(window, &xpos, &ypos);
 
 		switch(key)
@@ -96,7 +97,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				smooth_path = !smooth_path;
 				break;
 			case GLFW_KEY_S:
-				world.soldierList.emplace_back(start.x, start.y, path);
+				world.soldierList.emplace_back(start, path);
 				break;
 			case GLFW_KEY_T:
 				if(world.money >= 20)
@@ -104,12 +105,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 					Tile *tile =
 						world.nodeMap.GetTile(Navigation::Vector(xpos, ypos));
 
-					if(tile->GetNavigable() == false)
+					if(tile->GetType() == Tile::WALL)
 					{
+						tile->SetType(Tile::TURRET);
+
 						world.turretList.emplace_back(
 							tile->GetX() * Navigation::NodeMap::TileW + 15.0f,
 							tile->GetY() * Navigation::NodeMap::TileH + 15.0f
 						);
+
 						world.money -= 20;
 					}
 				}
@@ -215,10 +219,17 @@ int main(int argc, char *argv[])
 							Tile *tile = world.nodeMap.TileMap::GetTile(x, y);
 
 							glPushMatrix();
-								if(tile->GetNavigable() == true)
-									glColor3f(0.5f, 0.5f, 0.5f);
-								else
-									glColor3f(0.1f, 0.1f, 0.1f);
+								Tile::Type type = tile->GetType();
+
+								switch(type)
+								{
+									case Tile::Type::ROAD:
+										glColor3f(0.5f, 0.5f, 0.5f); break;
+									case Tile::Type::WALL:
+										glColor3f(0.1f, 0.1f, 0.1f); break;
+									case Tile::Type::TURRET:
+										glColor3f(1.0f, 0.0f,0.0f); break;
+								}
 								glTranslatef(x, y, 0.0f);
 								glBegin(GL_TRIANGLE_STRIP);
 									glVertex2f(0.0f, 0.0f);
@@ -302,7 +313,7 @@ int main(int argc, char *argv[])
 					glPushMatrix();
 						glTranslatef(soldier.position.x, soldier.position.y, 0.0f);
 						glPushMatrix();
-							glScalef(9.0f, 9.0f, 1.0f);
+							glScalef(Game::Soldier::Radius, Game::Soldier::Radius, 1.0f);
 							glRotatef(soldier.rotation * 57.2958f, 0.0f, 0.0f, 1.0f);
 							glColor3f(0.0f, 1.0f, 1.0f);
 							glBegin(GL_TRIANGLE_FAN);
@@ -444,11 +455,10 @@ int main(int argc, char *argv[])
 
 					while(world.bulletList.end() != i)
 					{
-						i->Work(elapsedTime);
+						i->Work(elapsedTime, world);
 
 						if(i->detonated == true)
 						{
-							i->Explode(world.soldierList);
 							i = world.bulletList.erase(i);
 						}
 						else

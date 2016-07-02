@@ -10,6 +10,7 @@ namespace Game
 	class Turret;
 };
 
+#include "Vector.hpp"
 #include "Soldier.hpp"
 #include "Bullet.hpp"
 #include "Turret.hpp"
@@ -24,10 +25,10 @@ namespace Game
 
 		Navigation::NodeMap nodeMap;
 
+		std::vector<Navigation::Vector> path;
 		std::vector<Soldier> soldierList;
 		std::vector<Turret> turretList;
 		std::vector<Bullet> bulletList;
-
 		int money;
 	};
 };

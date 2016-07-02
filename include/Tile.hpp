@@ -3,30 +3,35 @@
 
 class Tile
 {
-    public:
-        void Initialise(int x, int y, bool navigable);
-        void Reset();
+public:
+	enum Type
+	{
+		ROAD, WALL, TURRET
+	};
 
-        void SetCost(float cost);
-        float GetCost();
+	void Initialise(int x, int y, Type type);
+	void Reset();
 
-        void SetNavigable(bool navigable);
-        bool GetNavigable();
+	void SetCost(float cost);
+	float GetCost();
 
-        bool SetParent(Tile *parent, float cost);
-        Tile *GetParent();
+	void SetType(Type type);
+	Type GetType();
 
-        int GetHeuristic(Tile *destination);
+	bool SetParent(Tile *parent, float cost);
+	Tile *GetParent();
 
-		int GetX();
-		int GetY();
+	int GetHeuristic(Tile *destination);
 
-    private:
-        bool navigable;
-        float cost;
-        int x;
-        int y;
-        Tile *parent;
+	int GetX();
+	int GetY();
+
+private:
+	Tile *parent;
+	float cost;
+	int x;
+	int y;
+	Type type;
 };
 
 #endif // TILE_HPP

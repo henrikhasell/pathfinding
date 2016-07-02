@@ -28,7 +28,7 @@ Turret::Turret(const Turret &other) :
 	target(other.target)
 {
 	if(target)
-		target->targetedBy.push_back(this);
+		target->turretList.push_back(this);
 }
 
 Turret::~Turret()
@@ -36,10 +36,10 @@ Turret::~Turret()
 	if(target)
 	{
 		std::vector<Game::Turret*>::iterator location =
-			std::find(target->targetedBy.begin(), target->targetedBy.end(), this);
+			std::find(target->turretList.begin(), target->turretList.end(), this);
 
-		if(location != target->targetedBy.end())
-			target->targetedBy.erase(location);
+		if(location != target->turretList.end())
+			target->turretList.erase(location);
 	}
 }
 
@@ -52,16 +52,16 @@ Turret &Turret::operator=(const Turret &other)
 	if(target)
 	{
 		std::vector<Game::Turret*>::iterator location =
-			std::find(target->targetedBy.begin(), target->targetedBy.end(), this);
+			std::find(target->turretList.begin(), target->turretList.end(), this);
 
-		if(location != target->targetedBy.end())
-			target->targetedBy.erase(location);
+		if(location != target->turretList.end())
+			target->turretList.erase(location);
 	}
 
 	target = other.target;
 
 	if(target)
-		target->targetedBy.push_back(this);
+		target->turretList.push_back(this);
 }
 
 void Turret::Work(double time, std::vector<Soldier> &selection, std::vector<Bullet> &bullets)
@@ -70,12 +70,12 @@ void Turret::Work(double time, std::vector<Soldier> &selection, std::vector<Bull
 	{
 		if(target)
 		{
-			std::vector<Game::Turret*> &targetedBy = target->targetedBy;
-			std::vector<Game::Turret*>::iterator location = std::find(targetedBy.begin(), targetedBy.end(), this);
+			std::vector<Game::Turret*> &turretList = target->turretList;
+			std::vector<Game::Turret*>::iterator location = std::find(turretList.begin(), turretList.end(), this);
 
-			if(location != targetedBy.end())
+			if(location != turretList.end())
 			{
-				target->targetedBy.erase(location);
+				target->turretList.erase(location);
 			}
 		}
 
@@ -96,9 +96,9 @@ void Turret::Work(double time, std::vector<Soldier> &selection, std::vector<Bull
 
 		if(shortestDistance <= GetRange())
 		{
-			nearestSoldier->targetedBy.push_back(this);
+			nearestSoldier->turretList.push_back(this);
 			target = nearestSoldier;
-		}			
+		}
 		else
 		{
 			target = nullptr;
@@ -157,7 +157,7 @@ bool Turret::TargetInRange()
 
 float Turret::GetRange()
 {
-	return 200.0f;
+	return 100.0f;
 }
 
 void Turret::FireBullet(Soldier &target, std::vector<Bullet> &bullets)
