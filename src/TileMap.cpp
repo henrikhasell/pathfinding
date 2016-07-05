@@ -31,10 +31,6 @@ TileMap::TileMap(int width, int height, const char data[]) : TileMap(width, heig
 					tile->SetType(Tile::ROAD); break;
 				case 1:
 					tile->SetType(Tile::WALL); break;
-				case 2:
-					tile->SetType(Tile::TURRET); break;
-				default:
-					tile->SetType(Tile::ROAD); break;
 			}
         }
     }

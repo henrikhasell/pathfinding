@@ -21,7 +21,7 @@ namespace Game
 	struct World
 	{
 		World(int w, int h, const char data[]) :
-			nodeMap(w, h, data), money(100) {}
+			nodeMap(w, h, data), money(100), lives(5) {}
 
 		Navigation::NodeMap nodeMap;
 
@@ -29,7 +29,7 @@ namespace Game
 		std::vector<Soldier> soldierList;
 		std::vector<Turret> turretList;
 		std::vector<Bullet> bulletList;
-		int money;
+		int money, lives;
 	};
 };
 

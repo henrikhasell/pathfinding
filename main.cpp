@@ -375,7 +375,8 @@ int main(int argc, char *argv[])
 							glVertex2f(+0.5f,+0.5f);
 							glVertex2f(-0.5f,+0.5f);
 						glEnd();
-			glColor3f(1.0f, 0.0f, 0.0f);
+						glScalef(0.5f, 0.5f, 1.0f);
+						glColor3f(1.0f, 0.0f, 0.0f);
 						glRotatef(turret.rotation * 57.2958f,
 							0.0f, 0.0f, 1.0f);
 						glBegin(GL_LINES);
@@ -413,9 +414,17 @@ int main(int argc, char *argv[])
 					glTranslatef(0.0f, 1.5f, 0.0f);
 					RenderString("Press \"S\" to spawn soldiers.");
 					glTranslatef(0.0f, 1.5f, 0.0f);
-					glScalef(2.0f, 2.0f, 1.0f);
-					glColor3f(1.0f, 1.0f, 1.0f);
 					RenderFormattedString("Current funds: $%d", world.money);
+					glTranslatef(0.0f, 1.5f, 0.0f);
+					if(world.lives <= 0)
+					{
+						glScalef(3.0f, 3.0f, 1.0f);
+						RenderString("GAME OVER");
+					}
+					else
+					{
+						RenderFormattedString("Lives remaining: %d", world.lives);
+					}
 				glPopMatrix();
 
 				glfwSwapBuffers(window);
@@ -435,6 +444,8 @@ int main(int argc, char *argv[])
 						if(i->path.empty() == true)
 						{
 							i = world.soldierList.erase(i);
+							if(world.lives) // != 0
+								world.lives--;
 						}
 						else
 						{
