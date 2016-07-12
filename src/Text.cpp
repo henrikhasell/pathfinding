@@ -2,7 +2,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-GLuint characterTexture[16 *16] = {
+static GLuint characterTexture[16 *16] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

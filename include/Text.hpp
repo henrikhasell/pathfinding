@@ -3,8 +3,6 @@
 
 #include <GL/gl.h>
 
-extern GLuint characterTexture[16 *16];
-
 void LoadCharacterTextures();
 
 void RenderString(const char string[]);

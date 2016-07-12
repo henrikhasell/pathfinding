@@ -22,16 +22,16 @@ struct Particle
 		const Navigation::Vector &velocity,
 		float r, float g, float b,
 		float fadeSpeed,
-		float scale,
-		const char format[], ...) :
+		float scale = 8.0f,
+		const char format[] = "", ...) :
 		position(position),
 		velocity(0.0f, -30.0f),
-		r(1.0f),
-		g(0.0f),
-		b(0.0f),
+		r(r),
+		g(g),
+		b(b),
 		a(1.0f),
 		fadeSpeed(fadeSpeed),
-		scale(8.0f)
+		scale(scale)
 	{
 		va_list argumentList;
 		va_start(argumentList, format);

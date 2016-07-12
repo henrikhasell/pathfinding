@@ -68,23 +68,56 @@ Bullet &Bullet::operator=(const Bullet &other)
 
 void Bullet::Work(double time, World &world)
 {
-	double distanceAvailable = time * Bullet::Speed;
-
-	double distanceToDestination = (destination - position).Magnitude();
-
-	if(distanceToDestination <= distanceAvailable)
+	if(!detonated)
 	{
-		position = destination;
-		detonated = true;
+		double distanceAvailable = time * Bullet::Speed;
+
+		double distanceToDestination = (destination - position).Magnitude();
+
+		if(distanceToDestination <= distanceAvailable)
+		{
+			position = destination;
+			detonated = true;
+		}
+		else
+		{
+			position += direction * distanceAvailable;
+		}
+
+		if(Collide(world) == true)
+		{
+			if(target)
+			{
+				world.particleList.emplace_back(
+					position,
+					Navigation::Vector(0.0f, -100.0f),
+					1.0f, 0.0f, 0.0f,
+					1.5f,
+					8.0f, "-10");
+			}
+			else
+			{
+				world.particleList.emplace_back(
+					position,
+					Navigation::Vector(0.0f, -100.0f),
+					0.0f, 1.0f, 0.0f,
+					0.2f,
+					8.0f, "+$5");
+			}
+		}
+		else if(detonated && target)
+		{
+			world.particleList.emplace_back(
+				position,
+				Navigation::Vector(0.0f, -100.0f),
+				1.0f, 1.0f, 1.0f,
+				0.2f,
+				8.0f, "miss");
+		}
 	}
-	else
-	{
-		position += direction * distanceAvailable;
-	}
-	Explode(world);
 }
 
-void Bullet::Explode(World &world)
+bool Bullet::Collide(World &world)
 {
 	if(target)
 	{
@@ -92,6 +125,7 @@ void Bullet::Explode(World &world)
 
 		if(distance < Soldier::Radius)
 		{
+			position = target->position;
 			target->hitpoints -= 10.0f;
 
 			if(target->hitpoints <= 0.0f)
@@ -110,6 +144,10 @@ void Bullet::Explode(World &world)
 			}
 
 			detonated = true;
+
+			return true;
 		}
 	}
+
+	return false;
 }

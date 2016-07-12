@@ -25,7 +25,7 @@ namespace Game
 			Bullet &operator=(const Bullet &other);
 
 			void Work(double time, World &world);
-			virtual void Explode(World &world);
+			virtual bool Collide(World &world);
 		// private:
 			Soldier *target;
 			Navigation::Vector destination;

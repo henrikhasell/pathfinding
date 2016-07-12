@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
 						else
 						{
 							glScalef(particle.scale, particle.scale, 1.0f);
-							glTranslatef((-(GLfloat)stringLength)/2.0f, -0.5f, 0.0f);
+							glTranslatef(-(GLfloat)stringLength/2.0f, -0.5f, 0.0f);
 							RenderString(particle.text);
 						}
 					glPopMatrix();
@@ -488,7 +488,7 @@ int main(int argc, char *argv[])
 					while(world.particleList.end() != i)
 					{
 						i->position += i->velocity * elapsedTime;
-						i->a -= 0.1f * elapsedTime;
+						i->a -= i->fadeSpeed * elapsedTime;
 
 						if(i->a <= 0.0f)
 						{
