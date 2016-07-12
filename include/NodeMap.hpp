@@ -11,8 +11,8 @@ namespace Navigation
     {
         public:
             // Static constants:
-            static constexpr float TileW = 30.0f;
-            static constexpr float TileH = 30.0f;
+            static constexpr float TileW = 32.0f;
+            static constexpr float TileH = 32.0f;
             // Constructors:
             NodeMap(int width, int height);
             NodeMap(int width, int height, const char data[]);

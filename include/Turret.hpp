@@ -10,7 +10,7 @@ namespace Game
 	class Turret
 	{
 		public:
-			static float constexpr NozzleLength = 10.0f;
+			static float constexpr NozzleLength = 16.0f;
 			static float constexpr RotationSpeed = 0.1f;
 			Turret(Navigation::Vector &position);
 			Turret(float x, float y);

@@ -16,8 +16,8 @@
 #include "Text.hpp"
 
 #define PROJECT_NAME "Pathfinding Demo"
-#define SCREEN_W 600
-#define SCREEN_H 600
+#define SCREEN_W 32 * 20
+#define SCREEN_H 32 * 20
 
 // const char TILEMAP_DATA[30 * 30] = {
 // 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -80,7 +80,7 @@ const char TILEMAP_DATA[20 * 20] = {
 Game::World world(20, 20, TILEMAP_DATA);
 
 std::vector<Navigation::Vector> path;
-Navigation::Vector start(495.0f, 15.0f), finish(495.0f, 585.0f);
+Navigation::Vector start(16.5f * 32.0f, 0.5f * 32.0f), finish(16.5f * 32.0f, 19.5 * 32.0f);
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -107,8 +107,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 						tile->SetType(Tile::TURRET);
 
 						world.turretList.emplace_back(
-							tile->GetX() * Navigation::NodeMap::TileW + 15.0f,
-							tile->GetY() * Navigation::NodeMap::TileH + 15.0f
+							tile->GetX() * Navigation::NodeMap::TileW + 16.0f,
+							tile->GetY() * Navigation::NodeMap::TileH + 16.0f
 						);
 
 						world.money -= 20;
@@ -183,6 +183,7 @@ int main(int argc, char *argv[])
 
 			// Create OpenGL context:
 			glfwMakeContextCurrent(window);
+			glfwSwapInterval(1);
 
 			// Initialise OpenGL:
 			glEnable(GL_TEXTURE_2D);
