@@ -14,6 +14,7 @@
 
 #include "World.hpp"
 #include "Text.hpp"
+#include "Textures.hpp"
 
 #define PROJECT_NAME "Pathfinding Demo"
 #define SCREEN_W 32 * 20
@@ -194,6 +195,7 @@ int main(int argc, char *argv[])
 
 			// Load character textures:
 			LoadCharacterTextures();
+			LoadTextures();
 
 			// Initialise projection:
 			glMatrixMode(GL_PROJECTION);
@@ -234,6 +236,26 @@ int main(int argc, char *argv[])
 								switch(type)
 								{
 								case Tile::Type::ROAD:
+									glBindTexture(GL_TEXTURE_2D, tileTextures[0]);
+									break;
+								default:
+									glBindTexture(GL_TEXTURE_2D, tileTextures[2]);
+									break;
+								}
+								glColor3f(1.0f, 1.0f, 1.0f);
+								glBegin(GL_TRIANGLE_STRIP);
+									glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
+									glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);
+									glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 1.0f);
+									glTexCoord2f(1.0f, 1.0f); glVertex2f(1.0f, 1.0f);
+								glEnd();
+
+
+								glBindTexture(GL_TEXTURE_2D, 0);
+/*
+								switch(type)
+								{
+								case Tile::Type::ROAD:
 									glColor3f(0.5f, 0.5f, 0.5f);
 
 									glBegin(GL_TRIANGLE_STRIP);
@@ -263,6 +285,7 @@ int main(int argc, char *argv[])
 									glEnd();
 									break;
 								}
+*/
 								// glColor3f(0.0f, 0.0f, 0.0f);
 								// glBegin(GL_LINE_LOOP);
 								// 	glVertex2f(0.0f, 0.0f);
