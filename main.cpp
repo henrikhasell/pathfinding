@@ -6,6 +6,7 @@
 #include <iterator>
 #include <vector>
 #include <cmath>
+#include <cstring>
 
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
@@ -113,6 +114,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 						world.money -= 20;
 					}
 				}
+				break;
+			case GLFW_KEY_P:
+				static int counter = 0;
+				world.particleList.emplace_back(
+					Navigation::Vector(xpos, ypos),
+					Navigation::Vector(0.0f, -20.0f),
+					1.0f, 1.0f, 1.0f,
+					0.1f,
+					8.0f,
+					"Hello, world! %d", counter++);
 				break;
 		}
 	}
@@ -368,6 +379,33 @@ int main(int argc, char *argv[])
 				}
 				glEnd();
 
+				for(Particle &particle : world.particleList)
+				{
+					glColor4f(particle.r, particle.g, particle.b, particle.a);
+					glPushMatrix();
+						glTranslatef(particle.position.x, particle.position.y, 0.0f);
+
+						size_t stringLength = strlen(particle.text);
+
+						if(stringLength == 0)
+						{
+							glScalef(particle.scale, particle.scale, 1.0f);
+							glBegin(GL_TRIANGLE_STRIP);
+								glVertex2f(-0.5f,-0.5f);
+								glVertex2f(+0.5f,-0.5f);
+								glVertex2f(-0.5f,+0.5f);
+								glVertex2f(+0.5f,+0.5f);
+							glEnd();
+						}
+						else
+						{
+							glScalef(particle.scale, particle.scale, 1.0f);
+							glTranslatef((-(GLfloat)stringLength)/2.0f, -0.5f, 0.0f);
+							RenderString(particle.text);
+						}
+					glPopMatrix();
+				}
+
 				glPushMatrix();
 					glScalef(8.0f, 8.0f, 1.0f);
 					glTranslatef(0.5f, 0.5f, 0.0f);
@@ -435,6 +473,26 @@ int main(int argc, char *argv[])
 						if(i->detonated == true)
 						{
 							i = world.bulletList.erase(i);
+						}
+						else
+						{
+							i++;
+						}
+					}
+				}
+
+				{
+					std::vector<Particle>::iterator i =
+						world.particleList.begin();
+
+					while(world.particleList.end() != i)
+					{
+						i->position += i->velocity * elapsedTime;
+						i->a -= 0.1f * elapsedTime;
+
+						if(i->a <= 0.0f)
+						{
+							i = world.particleList.erase(i);
 						}
 						else
 						{

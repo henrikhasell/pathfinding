@@ -11,9 +11,10 @@ namespace Game
 };
 
 #include "Vector.hpp"
+#include "Particle.hpp"
 #include "Soldier.hpp"
-#include "Bullet.hpp"
 #include "Turret.hpp"
+#include "Bullet.hpp"
 #include "NodeMap.hpp"
 
 namespace Game
@@ -26,6 +27,7 @@ namespace Game
 		Navigation::NodeMap nodeMap;
 
 		std::vector<Navigation::Vector> path;
+		std::vector<Particle> particleList;
 		std::vector<Soldier> soldierList;
 		std::vector<Turret> turretList;
 		std::vector<Bullet> bulletList;
