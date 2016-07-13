@@ -116,22 +116,22 @@ void Soldier::Move(double time)
 			{
 				if(direction.x < 0)
 				{
-					animation.animation = animalTextures + 4 * 0;
+					animation.animation = ANIMATION_BUNNY_L;
 				}
 				else
 				{
-					animation.animation = animalTextures + 4 * 1;
+					animation.animation = ANIMATION_BUNNY_R;
 				}
 			}
 			else
 			{
 				if(direction.y < 0)
 				{
-					animation.animation = animalTextures + 4 * 3;
+					animation.animation = ANIMATION_BUNNY_U;
 				}
 				else
 				{
-					animation.animation = animalTextures + 4 * 2;
+					animation.animation = ANIMATION_BUNNY_D;
 				}
 			}
 
