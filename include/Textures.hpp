@@ -4,6 +4,7 @@
 #include <GL/gl.h>
 
 extern GLuint tileTextures[5];
+extern GLuint animalTextures[4 * 8];
 
 void LoadTextures();
 void FreeTextures();
