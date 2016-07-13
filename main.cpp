@@ -308,47 +308,40 @@ int main(int argc, char *argv[])
 				{
 					glPushMatrix();
 						glTranslatef(soldier.position.x, soldier.position.y, 0.0f);
-						glPushMatrix();
-							glScalef(Game::Soldier::Radius, Game::Soldier::Radius, 1.0f);
-							glRotatef(soldier.rotation * 57.2958f, 0.0f, 0.0f, 1.0f);
-							glColor3f(0.0f, 1.0f, 1.0f);
-							glBegin(GL_TRIANGLE_FAN);
-								for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-									glVertex2f( sinf(i), cosf(i) );
-							glEnd();
-							// Draw the soldier (outline).
-							glColor3f(0.0f, 0.0f, 0.0f);
-							// glBegin(GL_LINE_LOOP);
-							// 	for(GLfloat i = 0.0f; i < M_PI * 2; i += 0.3f)
-							// 		glVertex2f( sinf(i), cosf(i) );
-							// glEnd();
-							// Draw the soldier (direction).
-							glBegin(GL_LINES);
-								glVertex2f(0.0f, 0.0f);
-								glVertex2f(0.0f, 1.0f);
-							glEnd();
-						glPopMatrix();
 						if(soldier.hitpoints < Game::Soldier::MaximumHitpoints)
 						{
-							glTranslatef(-10.0f, -15.0f, 0.0f);
-							glColor3f(0.0f, 0.0f, 0.0f);
-							glScalef(20.0f, 5.0f, 1.0f);
-							glBegin(GL_TRIANGLE_STRIP);
-								glVertex2f(0.0f, 0.0f);
-								glVertex2f(1.0f, 0.0f);
-								glVertex2f(0.0f, 1.0f);
-								glVertex2f(1.0f, 1.0f);
-							glEnd();
-							glColor3f(1.0f, 0.0f, 0.0f);
-							glScalef(soldier.hitpoints / Game::Soldier::MaximumHitpoints, 1.0f, 1.0f);
-							glBegin(GL_TRIANGLE_STRIP);
-								glVertex2f(0.0f, 0.0f);
-								glVertex2f(1.0f, 0.0f);
-								glVertex2f(0.0f, 1.0f);
-								glVertex2f(1.0f, 1.0f);
-							glEnd();
+							glPushMatrix();
+								glTranslatef(-10.0f, -15.0f, 0.0f);
+								glColor3f(0.0f, 0.0f, 0.0f);
+								glScalef(20.0f, 5.0f, 1.0f);
+								glBegin(GL_TRIANGLE_STRIP);
+									glVertex2f(0.0f, 0.0f);
+									glVertex2f(1.0f, 0.0f);
+									glVertex2f(0.0f, 1.0f);
+									glVertex2f(1.0f, 1.0f);
+								glEnd();
+								glColor3f(1.0f, 0.0f, 0.0f);
+								glScalef(soldier.hitpoints / Game::Soldier::MaximumHitpoints, 1.0f, 1.0f);
+								glBegin(GL_TRIANGLE_STRIP);
+									glVertex2f(0.0f, 0.0f);
+									glVertex2f(1.0f, 0.0f);
+									glVertex2f(0.0f, 1.0f);
+									glVertex2f(1.0f, 1.0f);
+								glEnd();
+							glPopMatrix();
 						}
+						glColor3f(1.0f, 1.0f, 1.0f);
+						glBindTexture(GL_TEXTURE_2D, soldier.animation.animation[soldier.animation.index]);
+						glScalef(Game::Soldier::Radius, Game::Soldier::Radius, 1.0f);
+						glBegin(GL_TRIANGLE_STRIP);
+							glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f,-1.0f);
+							glTexCoord2f(1.0f, 0.0f); glVertex2f(+1.0f,-1.0f);
+							glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f,+1.0f);
+							glTexCoord2f(1.0f, 1.0f); glVertex2f(+1.0f,+1.0f);
+						glEnd();
+						glBindTexture(GL_TEXTURE_2D, 0);
 					glPopMatrix();
+					glBindTexture(GL_TEXTURE_2D, 0);
 				}
 
 				for(Game::Turret &turret : world.turretList)
@@ -466,6 +459,7 @@ int main(int argc, char *argv[])
 					while(world.soldierList.end() != i)
 					{
 						i->Move(elapsedTime);
+						i->animation.Work(elapsedTime, 4);
 
 						if(i->path.empty() == true)
 						{

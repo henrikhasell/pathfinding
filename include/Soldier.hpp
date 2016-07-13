@@ -2,6 +2,7 @@
 #define SOLDIER_HPP
 
 #include "Vector.hpp"
+#include "Animation.hpp"
 #include <vector>
 
 namespace Game
@@ -16,7 +17,7 @@ namespace Game
 		    // Constant expressions:
 		    static constexpr float MaximumHitpoints = 400.0f;
 		    static constexpr float MovementSpeed = 40.0f;
-		    static constexpr float Radius = 9.0f;
+		    static constexpr float Radius = 16.0f;
 
 		    // Constructor:
 		    Soldier(
@@ -32,6 +33,7 @@ namespace Game
 			void SetPath(std::vector<Navigation::Vector> &path);
 			void Move(double time);
 		//private:
+			Animation animation;
 			std::vector<Turret*> turretList;
 			std::vector<Bullet*> bulletList;
 			std::vector<Navigation::Vector> path;

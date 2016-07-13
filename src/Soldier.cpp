@@ -111,8 +111,29 @@ void Soldier::Move(double time)
         // and adjust the remaining distance.
         if(distance_to_target > 0.0f)
         {
-            // Update the rotation to face the target.
-            rotation = atan2f(-direction.x, direction.y);
+			// Update the animation.
+			if(direction.x)
+			{
+				if(direction.x < 0)
+				{
+					animation.animation = animalTextures + 4 * 0;
+				}
+				else
+				{
+					animation.animation = animalTextures + 4 * 1;
+				}
+			}
+			else
+			{
+				if(direction.y < 0)
+				{
+					animation.animation = animalTextures + 4 * 3;
+				}
+				else
+				{
+					animation.animation = animalTextures + 4 * 2;
+				}
+			}
 
             if(distance_to_target < distance_remaining)
             {
