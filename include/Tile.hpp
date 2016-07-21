@@ -1,6 +1,8 @@
 #ifndef TILE_HPP
 #define TILE_HPP
 
+#include <iostream>
+
 class Tile
 {
     public:
@@ -16,17 +18,17 @@ class Tile
         bool SetParent(Tile *parent, float cost);
         Tile *GetParent();
 
-        int GetHeuristic(Tile *destination);
+        int GetHeuristic(Tile *destination) const;
 
-		int GetX();
-		int GetY();
+		int GetX() const;
+		int GetY() const;
 
     private:
-        bool navigable;
         float cost;
+        bool navigable;
+        Tile *parent;
         int x;
         int y;
-        Tile *parent;
 };
 
 #endif // TILE_HPP

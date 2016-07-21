@@ -41,10 +41,23 @@ Tile *TileMap::GetTile(int x, int y)
     return tile + x + width * y;
 }
 
+struct OpenSetComparator
+{
+    bool operator()(const Tile* left, const Tile* right) const
+    {
+        return left->GetHeuristic(finish) > right->GetHeuristic(finish);
+    }
+
+    static Tile *finish;
+};
+
+/* Not thread safe. */
+Tile *OpenSetComparator::finish;
+
 bool TileMap::CalculatePath(Tile *start, Tile *finish)
 {
-    std::queue<Tile*> open_set;
-
+    std::priority_queue<Tile*, std::vector<Tile*>, OpenSetComparator> open_set;
+	OpenSetComparator::finish = finish;
     Reset();
 
     open_set.push(start);
@@ -53,7 +66,8 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
 
     while(open_set.empty() != true)
     {
-        Tile *head = open_set.front();
+        Tile *head = open_set.top();
+		open_set.pop();
 
         int x = head->GetX();
         int y = head->GetY();
@@ -101,10 +115,7 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
             }
         }
-
-        open_set.pop();
     }
-
     return false;
 }
 
@@ -119,7 +130,7 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish, std::vector<Tile*> &path)
             path.push_back(tile);
         }
     }
-
+    
     return result;
 }
 

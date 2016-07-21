@@ -1,11 +1,11 @@
 #include "Tile.hpp"
 #include <cfloat>
 
-int Tile::GetHeuristic(Tile *destination)
+int Tile::GetHeuristic(Tile *destination) const
 {
     int relative_x = this->x - destination->x;
     int relative_y = this->y - destination->y;
-
+    
     return (relative_x * relative_x) + (relative_y * relative_y);
 }
 
@@ -71,12 +71,12 @@ Tile *Tile::GetParent()
     return parent;
 }
 
-int Tile::GetX()
+int Tile::GetX() const
 {
     return x;
 }
 
-int Tile::GetY()
+int Tile::GetY() const
 {
     return y;
 }

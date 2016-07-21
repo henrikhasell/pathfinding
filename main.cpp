@@ -6,6 +6,7 @@
 #include <iterator>
 #include <vector>
 #include <cmath>
+#include <cfloat>
 
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
@@ -14,6 +15,7 @@
 #include "TileMap.hpp"
 #include "World.hpp"
 #include "Soldier.hpp"
+#include "Text.hpp"
 
 #define PROJECT_NAME "Pathfinding Demo"
 #define SCREEN_W 600
@@ -64,7 +66,7 @@ std::vector<Navigation::Soldier> army;
 Navigation::World world(30, 30, TILEMAP_DATA);
 
 // Start and finish points of our desired path.
-Navigation::Vector start(0.0f, 0.0f), finish(0.0f, 0.0f);
+Navigation::Vector start(Navigation::World::TileW * 1.5,Navigation::World::TileH * 1.5), finish(Navigation::World::TileW * 2.5, Navigation::World::TileH * 1.5);
 
 bool smooth_path = false;
 
@@ -182,7 +184,11 @@ int main(int argc, char *argv[])
             glfwMakeContextCurrent(window);
 
             // Initialise OpenGL:
+            glEnable(GL_TEXTURE_2D);
             glPointSize(5.0f);
+
+            // Load Text:
+            LoadCharacterTextures();
 
             // Initialise projection:
             glMatrixMode(GL_PROJECTION);
@@ -215,7 +221,10 @@ int main(int argc, char *argv[])
 
                             glPushMatrix();
                                 if(tile->GetNavigable() == true)
-                                    glColor3f(0.5f, 0.5f, 0.5f);
+                                	if(tile->GetCost() < FLT_MAX)
+                                    	glColor3f(0.5f, 0.2f, 0.2f);
+                                	else
+                                    	glColor3f(0.5f, 0.5f, 0.5f);
                                 else
                                     glColor3f(0.1f, 0.1f, 0.1f);
                                 glTranslatef(x, y, 0.0f);
@@ -241,6 +250,7 @@ int main(int argc, char *argv[])
                 // Calculate a path between the
                 // start and finish vectors if
                 // possible:
+                
                 if(world.CalculatePath(start, finish, path) == true)
                 {
                     if(smooth_path)
@@ -286,6 +296,7 @@ int main(int argc, char *argv[])
                     }
                     glEnd();
                 }
+                
                 // Draw the start and finish positions of the path.
                 glColor3f(0.0f, 1.0f, 0.0f);
                 glBegin(GL_POINTS);
