@@ -7,3 +7,8 @@
 /bin/
 /obj/
 
+# Ignore cross-compile Makefile output.
+/Pathfinding.exe
+/glfw-3.2.1.bin.WIN32.zip
+/glfw-3.2.1.bin.WIN32/
+
