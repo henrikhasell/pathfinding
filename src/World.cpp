@@ -13,7 +13,7 @@ World::World(int width, int height, const char data[]) : TileMap(width, height, 
 
 }
 
-Tile *World::GetTile(Vector &position)
+Tile *World::GetTile(const Vector &position)
 {
     return TileMap::GetTile(
         (int)(position.x / TileW),
@@ -21,7 +21,7 @@ Tile *World::GetTile(Vector &position)
     );
 }
 
-bool World::CalculatePath(Vector &start, Vector &finish)
+bool World::CalculatePath(const Vector &start, const Vector &finish)
 {
     Tile *start_tile = GetTile(start);
 
@@ -40,7 +40,7 @@ bool World::CalculatePath(Vector &start, Vector &finish)
     return TileMap::CalculatePath(start_tile, finish_tile);
 }
 
-bool World::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &path)
+bool World::CalculatePath(const Vector &start, const Vector &finish, std::vector<Vector> &path)
 {
     Tile *start_tile = GetTile(start);
 
@@ -74,7 +74,7 @@ bool World::CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &pa
 }
 
 
-bool World::Visible(Vector &start, Vector &finish)
+bool World::Visible(const Vector &start, const Vector &finish)
 {
     Vector ray_direction = finish - start;
     ray_direction.Normalise();

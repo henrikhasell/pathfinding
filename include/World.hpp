@@ -63,11 +63,11 @@ namespace Navigation
             World(int width, int height);
             World(int width, int height, const char data[]);
             // Getters:
-            Tile *GetTile(Vector &position);
+            Tile *GetTile(const Vector &position);
             // Pathfinding:
-            bool CalculatePath(Vector &start, Vector &finish);
-            bool CalculatePath(Vector &start, Vector &finish, std::vector<Vector> &path);
-            bool Visible(Vector &start, Vector &finish);
+            bool CalculatePath(const Vector &start, const Vector &finish);
+            bool CalculatePath(const Vector &start, const Vector &finish, std::vector<Vector> &path);
+            bool Visible(const Vector &start, const Vector &finish);
     };
 };
 #endif // WORLD_HPP
