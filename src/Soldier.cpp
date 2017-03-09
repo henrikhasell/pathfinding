@@ -1,4 +1,5 @@
 #include "Soldier.hpp"
+#include <cmath>
 
 using namespace Navigation;
 
