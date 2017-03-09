@@ -1,7 +1,7 @@
 #include "Tile.hpp"
 #include <cfloat>
 
-int Tile::GetHeuristic(Tile *destination) const
+int Tile::GetHeuristic(const Tile *destination) const
 {
     int relative_x = this->x - destination->x;
     int relative_y = this->y - destination->y;
@@ -14,7 +14,7 @@ void Tile::SetCost(float cost)
     this->cost = cost;
 }
 
-float Tile::GetCost()
+float Tile::GetCost() const
 {
     return cost;
 }
@@ -24,7 +24,7 @@ void Tile::SetNavigable(bool navigable)
     this->navigable = navigable;
 }
 
-bool Tile::GetNavigable()
+bool Tile::GetNavigable() const
 {
     return navigable;
 }
@@ -66,7 +66,7 @@ bool Tile::SetParent(Tile *parent, float cost)
     return false;
 }
 
-Tile *Tile::GetParent()
+Tile *Tile::GetParent() const
 {
     return parent;
 }

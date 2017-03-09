@@ -10,15 +10,15 @@ class Tile
         void Reset();
 
         void SetCost(float cost);
-        float GetCost();
+        float GetCost() const;
 
         void SetNavigable(bool navigable);
-        bool GetNavigable();
+        bool GetNavigable() const;
 
         bool SetParent(Tile *parent, float cost);
-        Tile *GetParent();
+        Tile *GetParent() const;
 
-        int GetHeuristic(Tile *destination) const;
+        int GetHeuristic(const Tile *destination) const;
 
 		int GetX() const;
 		int GetY() const;
