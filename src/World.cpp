@@ -42,21 +42,7 @@ bool World::CalculatePath(const Vector &start, const Vector &finish)
 
 bool World::CalculatePath(const Vector &start, const Vector &finish, std::vector<Vector> &path)
 {
-    Tile *start_tile = GetTile(start);
-
-    if(!start_tile)
-    {
-        return false;
-    }
-
-    Tile *finish_tile = GetTile(finish);
-
-    if(!finish_tile)
-    {
-        return false;
-    }
-
-    bool result = TileMap::CalculatePath(start_tile, finish_tile);
+    bool result = CalculatePath(start, finish);
 
     if(result)
     {
