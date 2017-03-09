@@ -1,5 +1,5 @@
 #include "TileMap.hpp"
-#include <queue>
+#include <list>
 
 using namespace Navigation;
 
@@ -41,33 +41,29 @@ Tile *TileMap::GetTile(int x, int y)
     return tile + x + width * y;
 }
 
-struct OpenSetComparator
-{
-    bool operator()(const Tile* left, const Tile* right) const
+static void priority_insert(std::list<Tile*> &list, Tile *tile, Tile *destination) {
+    std::list<Tile*>::iterator iterator = list.begin();
+    while(iterator != list.end() && (*iterator)->GetHeuristic(destination) < tile->GetHeuristic(destination))
     {
-        return left->GetHeuristic(finish) > right->GetHeuristic(finish);
+        iterator++;
     }
-
-    static Tile *finish;
-};
-
-/* Not thread safe. */
-Tile *OpenSetComparator::finish;
+    list.insert(iterator, tile);
+}
 
 bool TileMap::CalculatePath(Tile *start, Tile *finish)
 {
-    std::priority_queue<Tile*, std::vector<Tile*>, OpenSetComparator> open_set;
-	OpenSetComparator::finish = finish;
+    std::list<Tile*> open_set;
+
     Reset();
 
-    open_set.push(start);
+    open_set.push_back(start);
 
     start->SetCost(0);
 
     while(open_set.empty() != true)
     {
-        Tile *head = open_set.top();
-		open_set.pop();
+        Tile *head = open_set.front();
+        open_set.pop_front();
 
         int x = head->GetX();
         int y = head->GetY();
@@ -96,7 +92,7 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
                 else
                 {
-                    open_set.push(selected);
+                    priority_insert(open_set, selected, finish);
                 }
             }
         }
@@ -111,11 +107,12 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
                 else
                 {
-                    open_set.push(selected);
+                    priority_insert(open_set, selected, finish);
                 }
             }
         }
     }
+
     return false;
 }
 
