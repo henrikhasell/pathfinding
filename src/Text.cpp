@@ -2611,7 +2611,7 @@ void RenderString(const char string[])
 	glPushMatrix();
 	for(const char *index = string; *index != '\0'; index++)
 	{
-		glBindTexture(GL_TEXTURE_2D, characterTexture[*index]);
+		glBindTexture(GL_TEXTURE_2D, characterTexture[(unsigned char)*index]);
 			glBegin(GL_TRIANGLE_STRIP);
 				glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
 				glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);

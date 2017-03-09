@@ -69,5 +69,5 @@ namespace Navigation
             bool CalculatePath(const Vector &start, const Vector &finish, std::vector<Vector> &path);
             bool Visible(const Vector &start, const Vector &finish);
     };
-};
+}
 #endif // WORLD_HPP

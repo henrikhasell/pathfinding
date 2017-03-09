@@ -25,7 +25,7 @@ namespace Navigation
             bool CalculatePath(Tile *start, Tile *finish, std::vector<Tile*> &path);
             void Reset();
     };
-};
+}
 
 #endif // TILEMAP_HPP
 

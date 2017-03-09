@@ -25,6 +25,6 @@ namespace Navigation
 			// Path:
 			std::vector<Vector> path;
 	};
-};
+}
 
 #endif // SOLDIER_HPP
