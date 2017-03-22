@@ -20,7 +20,7 @@
             bool SetParent(Tile *parent, float cost);
             Tile *GetParent() const;
     
-            int GetHeuristic(const Tile *destination) const;
+            float GetHeuristic(const Tile *start, const Tile *destination) const;
     
     		int GetX() const;
     		int GetY() const;

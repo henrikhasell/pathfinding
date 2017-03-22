@@ -41,9 +41,9 @@ Tile *TileMap::GetTile(int x, int y)
     return tile + x + width * y;
 }
 
-static void priority_insert(std::list<Tile*> &list, Tile *tile, Tile *destination) {
+static void priority_insert(std::list<Tile*> &list, Tile *tile, Tile *start, Tile *destination) {
     std::list<Tile*>::iterator iterator = list.begin();
-    while(iterator != list.end() && (*iterator)->GetHeuristic(destination) < tile->GetHeuristic(destination))
+    while(iterator != list.end() && (*iterator)->GetHeuristic(start, destination) < tile->GetHeuristic(start, destination))
     {
         iterator++;
     }
@@ -74,14 +74,14 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
             GetTile(x + 0, y + 1),
             GetTile(x + 0, y - 1)
         };
-
+/*
         Tile *diagonal[4] = {
             GetTile(x + 1, y + 1),
             GetTile(x - 1, y - 1),
             GetTile(x + 1, y - 1),
             GetTile(x - 1, y + 1)
         };
-
+*/
         for(Tile *selected : adjacent)
         {
             if(selected && selected->SetParent(head, 1.0f) == true)
@@ -92,11 +92,11 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
                 else
                 {
-                    priority_insert(open_set, selected, finish);
+                    priority_insert(open_set, selected, start, finish);
                 }
             }
         }
-
+/*
         for(Tile *selected : diagonal)
         {
             if(selected && selected->SetParent(head, 1.4f) == true)
@@ -107,10 +107,11 @@ bool TileMap::CalculatePath(Tile *start, Tile *finish)
                 }
                 else
                 {
-                    priority_insert(open_set, selected, finish);
+                    priority_insert(open_set, selected, start, finish);
                 }
             }
         }
+*/
     }
 
     return false;
