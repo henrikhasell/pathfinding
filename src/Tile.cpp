@@ -6,15 +6,16 @@ float Tile::GetHeuristic(const Tile *start, const Tile *destination) const
 {
     float relative_x = (float)(this->x - destination->x);
     float relative_y = (float)(this->y - destination->y);
-
-    float manhattan = fabs(relative_x) + fabs(relative_y);
-
+#ifdef DIAGONAL
+    return cost + sqrtf(relative_x * relative_x + relative_y * relative_y);
+#else
     float relative_start_x = start->x - destination->x;
     float relative_start_y = start->y - destination->y;
-
+    float manhattan = fabs(relative_x) + fabs(relative_y);
     float cross = fabs(relative_start_x * relative_y - relative_start_y * relative_x);
 
     return cost + manhattan + cross * 0.001f;
+#endif
 }
 
 void Tile::SetCost(float cost)

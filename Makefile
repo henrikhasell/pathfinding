@@ -8,6 +8,7 @@ Pathfinding.exe: glfw-3.2.1.bin.WIN32
 	i686-w64-mingw32-g++-win32 \
 -static-libgcc \
 -static-libstdc++ \
+-DDIAGONAL \
 -mwindows \
 -Wpedantic \
 -Wall \
